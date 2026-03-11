@@ -13,19 +13,20 @@ class Transaction extends Model
         'user_id',
         'wallet_id',
         'type',
+        'category',
         'total_amount',
         'date',
         'merchant_name',
         'receipt_image_url',
         'notes',
         'is_verified',
-        'items', // array-nya
+        'items',
     ];
 
     protected $casts = [
         'total_amount' => 'float',
         'is_verified' => 'boolean',
         'date' => 'datetime',
-        'items' => 'array', // Beritahu Laravel ini adalah Array/Embedded
+        'items' => 'array',
     ];
 }

@@ -2,61 +2,86 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 
 class WalletController extends Controller
 {
-    // GET: Menampilkan daftar semua wallet
-    public function index()
-    {
-        // Nantinya di sini bisa difilter berdasarkan user yang sedang login: 
-        // Wallet::where('user_id', auth()->id())->get();
-        $wallets = Wallet::all();
+    use ApiResponse;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Daftar Wallet Berhasil Diambil',
-            'data'    => $wallets
-        ], 200);
+    public function index(Request $request)
+    {
+        $wallets = Wallet::where('user_id', (string) $request->user()->_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->ok($wallets, 'Daftar wallet berhasil diambil');
     }
 
-    // POST: Membuat wallet baru
     public function store(Request $request)
     {
-        // Validasi input
-        $validatedData = $request->validate([
-            'user_id'     => 'required|string', // Pastikan format id valid
+        $validated = $request->validate([
             'wallet_name' => 'required|string|max:255',
-            'balance'     => 'required|numeric',
+            'balance' => 'required|numeric',
+            'wallet_color' => 'nullable|string|max:32',
         ]);
 
-        // Simpan ke database
-        $wallet = Wallet::create($validatedData);
+        $wallet = Wallet::create([
+            ...$validated,
+            'user_id' => (string) $request->user()->_id,
+        ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Wallet Berhasil Dibuat',
-            'data'    => $wallet
-        ], 201);
+        return $this->ok($wallet, 'Wallet berhasil dibuat', [], 201);
     }
 
-    // GET: Menampilkan detail 1 wallet spesifik (Opsional tapi penting)
-    public function show($id)
+    public function show(Request $request, string $id)
     {
-        $wallet = Wallet::find($id);
+        $wallet = Wallet::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
 
         if (!$wallet) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Wallet tidak ditemukan'
-            ], 404);
+            return $this->fail('Wallet tidak ditemukan', [], 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data'    => $wallet
-        ], 200);
+        return $this->ok($wallet, 'Detail wallet berhasil diambil');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $wallet = Wallet::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$wallet) {
+            return $this->fail('Wallet tidak ditemukan', [], 404);
+        }
+
+        $validated = $request->validate([
+            'wallet_name' => 'sometimes|required|string|max:255',
+            'balance' => 'sometimes|required|numeric',
+            'wallet_color' => 'nullable|string|max:32',
+        ]);
+
+        $wallet->update($validated);
+
+        return $this->ok($wallet->fresh(), 'Wallet berhasil diperbarui');
+    }
+
+    public function destroy(Request $request, string $id)
+    {
+        $wallet = Wallet::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$wallet) {
+            return $this->fail('Wallet tidak ditemukan', [], 404);
+        }
+
+        $wallet->delete();
+
+        return $this->ok(null, 'Wallet berhasil dihapus');
     }
 }

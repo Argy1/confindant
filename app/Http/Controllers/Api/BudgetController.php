@@ -2,61 +2,89 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Budget;
 use Illuminate\Http\Request;
 
 class BudgetController extends Controller
 {
-    // GET: Menampilkan daftar budget
-    public function index()
-    {
-        // Mengurutkan dari yang terbaru dibuat
-        $budgets = Budget::orderBy('created_at', 'desc')->get();
+    use ApiResponse;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Daftar Budget Berhasil Diambil',
-            'data'    => $budgets
-        ], 200);
+    public function index(Request $request)
+    {
+        $budgets = Budget::where('user_id', (string) $request->user()->_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return $this->ok($budgets, 'Daftar budget berhasil diambil');
     }
 
-    // POST: Membuat budget baru
     public function store(Request $request)
     {
-        // Validasi input
-        $validatedData = $request->validate([
-            'user_id'      => 'required|string',
-            'category'     => 'required|string|max:255',
-            'limit_amount' => 'required|numeric',
-            'period_month' => 'required|integer|min:1', // Pastikan bulan berupa angka bulat (contoh: 1, 3, 6)
+        $validated = $request->validate([
+            'category' => 'required|string|max:255',
+            'limit_amount' => 'required|numeric|min:0',
+            'period_month' => 'required|string|max:32',
+            'alert_threshold' => 'nullable|numeric|min:1|max:100',
         ]);
 
-        // Simpan ke database
-        $budget = Budget::create($validatedData);
+        $budget = Budget::create([
+            ...$validated,
+            'alert_threshold' => $validated['alert_threshold'] ?? 80,
+            'user_id' => (string) $request->user()->_id,
+        ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Budget Berhasil Dibuat',
-            'data'    => $budget
-        ], 201);
+        return $this->ok($budget, 'Budget berhasil dibuat', [], 201);
     }
 
-    // GET: Menampilkan detail 1 budget
-    public function show($id)
+    public function show(Request $request, string $id)
     {
-        $budget = Budget::find($id);
+        $budget = Budget::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
 
         if (!$budget) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Budget tidak ditemukan'
-            ], 404);
+            return $this->fail('Budget tidak ditemukan', [], 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data'    => $budget
-        ], 200);
+        return $this->ok($budget, 'Detail budget berhasil diambil');
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $budget = Budget::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$budget) {
+            return $this->fail('Budget tidak ditemukan', [], 404);
+        }
+
+        $validated = $request->validate([
+            'category' => 'sometimes|required|string|max:255',
+            'limit_amount' => 'sometimes|required|numeric|min:0',
+            'period_month' => 'sometimes|required|string|max:32',
+            'alert_threshold' => 'nullable|numeric|min:1|max:100',
+        ]);
+
+        $budget->update($validated);
+
+        return $this->ok($budget->fresh(), 'Budget berhasil diperbarui');
+    }
+
+    public function destroy(Request $request, string $id)
+    {
+        $budget = Budget::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$budget) {
+            return $this->fail('Budget tidak ditemukan', [], 404);
+        }
+
+        $budget->delete();
+
+        return $this->ok(null, 'Budget berhasil dihapus');
     }
 }

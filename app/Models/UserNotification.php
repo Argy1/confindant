@@ -4,19 +4,20 @@ namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
 
-class Wallet extends Model
+class UserNotification extends Model
 {
     protected $connection = 'mongodb';
-    protected $collection = 'wallets';
+    protected $collection = 'user_notifications';
 
     protected $fillable = [
         'user_id',
-        'wallet_name',
-        'balance',
-        'wallet_color',
+        'title',
+        'subtitle',
+        'time_label',
+        'read',
     ];
 
     protected $casts = [
-        'balance' => 'float',
+        'read' => 'boolean',
     ];
 }

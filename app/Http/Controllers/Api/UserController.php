@@ -2,87 +2,143 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\Goal;
+use App\Models\Habit;
+use App\Models\ProfileSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; // Untuk enkripsi password
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // ==========================================
-    // 1. REGISTER (Daftar Akun Baru)
-    // ==========================================
+    use ApiResponse;
+
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'username' => 'required|string|max:255',
-            'email'    => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
         ]);
 
-        // Buat user baru (Password otomatis di-hash karena setingan 'casts' di Model)
         $user = User::create([
-            'username' => $request->username,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password), // Enkripsi password!
+            'username' => $validated['username'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
-        // Langsung cetak Token API untuk user ini
-        $token = $user->createToken('auth_token')->plainTextToken;
+        ProfileSetting::firstOrCreate(
+            ['user_id' => (string) $user->_id],
+            [
+                'full_name' => $user->username,
+                'username' => $user->username,
+                'email' => $user->email,
+                'phone' => '',
+                'currency' => 'IDR (Rp)',
+                'avatar_path' => 'assets/avatars/profile_kennedy.jpg',
+                'notification_settings' => [
+                    'push_enabled' => true,
+                    'email_enabled' => true,
+                    'transaction_alerts' => true,
+                    'budget_alerts' => true,
+                    'weekly_report' => false,
+                ],
+                'faq_items' => [
+                    [
+                        'question' => 'Bagaimana cara menambahkan transaksi?',
+                        'answer' => 'Buka halaman Home lalu gunakan Quick Action Add Expense/Add Income atau Scan.',
+                        'expanded' => false,
+                    ],
+                ],
+                'about_info' => [
+                    'app_name' => 'Confindant',
+                    'version' => '1.0.0',
+                    'build' => '100',
+                    'description' => 'Confindant membantu kamu melacak pemasukan, pengeluaran, dan budget harian.',
+                ],
+            ]
+        );
 
-        return response()->json([
-            'success'      => true,
-            'message'      => 'Register Berhasil',
-            'data'         => $user,
+        Goal::firstOrCreate(
+            [
+                'user_id' => (string) $user->_id,
+                'name' => 'Emergency Fund',
+            ],
+            [
+                'target_amount' => 10000000,
+                'current_amount' => 0,
+                'target_date_label' => 'Dec 2026',
+                'linked_wallet' => 'Main Wallet',
+                'contributions' => [],
+            ]
+        );
+
+        Habit::firstOrCreate(
+            [
+                'user_id' => (string) $user->_id,
+                'title' => 'Daily Expense Log',
+            ],
+            [
+                'description' => 'Log all expenses every day.',
+                'target_count' => 7,
+                'current_count' => 0,
+                'frequency' => 'weekly',
+                'active' => true,
+            ]
+        );
+
+        $plainTextToken = $user->createToken('auth_token')->plainTextToken;
+        $token = str_contains($plainTextToken, '|')
+            ? explode('|', $plainTextToken, 2)[1]
+            : $plainTextToken;
+
+        return $this->ok([
+            'user' => $user,
             'access_token' => $token,
-            'token_type'   => 'Bearer',
-        ], 201);
+            'token_type' => 'Bearer',
+        ], 'Register berhasil', [], 201);
     }
 
-    // ==========================================
-    // 2. LOGIN (Masuk Akun)
-    // ==========================================
     public function login(Request $request)
     {
-        $request->validate([
-            'email'    => 'required|string|email',
+        $validated = $request->validate([
+            'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-        // Cari user berdasarkan email
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $validated['email'])->first();
 
-        // Cek apakah user ada DAN passwordnya cocok
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email atau Password salah!'
-            ], 401);
+        if (!$user || !Hash::check($validated['password'], $user->password)) {
+            return $this->fail('Email atau password salah', [], 401);
         }
 
-        // Cetak Token API
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $plainTextToken = $user->createToken('auth_token')->plainTextToken;
+        $token = str_contains($plainTextToken, '|')
+            ? explode('|', $plainTextToken, 2)[1]
+            : $plainTextToken;
 
-        return response()->json([
-            'success'      => true,
-            'message'      => 'Login Berhasil',
-            'data'         => $user,
-            'access_token' => $token, // INI DIA TOKEN-NYA!
-            'token_type'   => 'Bearer',
-        ], 200);
+        return $this->ok([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ], 'Login berhasil');
     }
 
-    // ==========================================
-    // 3. LOGOUT (Hapus Token)
-    // ==========================================
+    public function me(Request $request)
+    {
+        return $this->ok($request->user(), 'User aktif berhasil diambil');
+    }
+
     public function logout(Request $request)
     {
-        // Hapus token yang sedang dipakai oleh user ini
-        $request->user()->currentAccessToken()->delete();
+        $request->user()?->currentAccessToken()?->delete();
+        return $this->ok(null, 'Logout berhasil');
+    }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Logout Berhasil, Token dihapus'
-        ], 200);
+    public function index(Request $request)
+    {
+        return $this->ok([$request->user()], 'Daftar user berhasil diambil');
     }
 }
