@@ -57,7 +57,7 @@ class TransactionController extends Controller
             'is_verified' => $validated['is_verified'] ?? false,
             'user_id' => $userId,
         ]);
-        $wallet->increment('balance', $signedAmount);
+        $wallet->update(['balance' => (float) $newBalance]);
 
         return $this->ok($transaction, 'Transaksi berhasil disimpan', [], 201);
     }
@@ -122,15 +122,15 @@ class TransactionController extends Controller
             if ($finalBalance < 0) {
                 return $this->fail('Saldo wallet tidak mencukupi untuk perubahan transaksi ini', [], 422);
             }
-            $oldWallet->increment('balance', $newSigned - $oldSigned);
+            $oldWallet->update(['balance' => (float) $finalBalance]);
         } else {
             $oldFinal = (float) $oldWallet->balance - $oldSigned;
             $newFinal = (float) $newWallet->balance + $newSigned;
             if ($oldFinal < 0 || $newFinal < 0) {
                 return $this->fail('Saldo wallet tidak mencukupi untuk perubahan transaksi ini', [], 422);
             }
-            $oldWallet->increment('balance', -1 * $oldSigned);
-            $newWallet->increment('balance', $newSigned);
+            $oldWallet->update(['balance' => (float) $oldFinal]);
+            $newWallet->update(['balance' => (float) $newFinal]);
         }
 
         $transaction->update($validated);
@@ -158,7 +158,7 @@ class TransactionController extends Controller
             return $this->fail('Saldo wallet tidak valid untuk menghapus transaksi ini', [], 422);
         }
 
-        $wallet->increment('balance', $rollbackAmount);
+        $wallet->update(['balance' => (float) $newBalance]);
         $transaction->delete();
 
         return $this->ok(null, 'Transaksi berhasil dihapus');
@@ -202,7 +202,7 @@ class TransactionController extends Controller
             'is_verified' => $validated['is_verified'] ?? true,
             'user_id' => $userId,
         ]);
-        $wallet->increment('balance', $signedAmount);
+        $wallet->update(['balance' => (float) $newBalance]);
 
         return $this->ok($transaction, 'Receipt berhasil diupload dan transaksi disimpan', [], 201);
     }
@@ -436,7 +436,7 @@ class TransactionController extends Controller
             'user_id' => $userId,
             'tags' => $this->normalizeTags($payload['tags'] ?? []),
         ]);
-        $wallet->increment('balance', $signedAmount);
+        $wallet->update(['balance' => (float) $newBalance]);
 
         return $transaction;
     }

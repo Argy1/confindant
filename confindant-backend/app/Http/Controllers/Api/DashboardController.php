@@ -22,9 +22,13 @@ class DashboardController extends Controller
         $budgets = Budget::where('user_id', $userId)->get();
         $transactions = Transaction::where('user_id', $userId)->orderBy('date', 'desc')->get();
 
-        $balance = $wallets->sum('balance');
+        $walletBalance = (float) $wallets->sum('balance');
         $income = $transactions->where('type', 'income')->sum('total_amount');
         $expense = $transactions->where('type', 'expense')->sum('total_amount');
+        $computedNet = (float) $income - (float) $expense;
+        $balance = abs($walletBalance) < 0.00001 && abs($computedNet) > 0.00001
+            ? $computedNet
+            : $walletBalance;
 
         $recent = $transactions->take(8)->values()->map(function ($trx) {
             $date = $trx->date ? Carbon::parse($trx->date) : now();
