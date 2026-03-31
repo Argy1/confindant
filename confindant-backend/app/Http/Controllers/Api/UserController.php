@@ -17,6 +17,9 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
+        $incomingName = trim((string) ($request->input('username') ?? $request->input('name') ?? ''));
+        $request->merge(['username' => $incomingName]);
+
         $validated = $request->validate([
             'username' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
@@ -29,9 +32,11 @@ class UserController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
-        ProfileSetting::firstOrCreate(
-            ['user_id' => (string) $user->_id],
-            [
+        $userId = (string) $user->_id;
+
+        if (!ProfileSetting::where('user_id', $userId)->exists()) {
+            ProfileSetting::create([
+                'user_id' => $userId,
                 'full_name' => $user->username,
                 'username' => $user->username,
                 'email' => $user->email,
@@ -58,36 +63,32 @@ class UserController extends Controller
                     'build' => '100',
                     'description' => 'Confindant membantu kamu melacak pemasukan, pengeluaran, dan budget harian.',
                 ],
-            ]
-        );
+            ]);
+        }
 
-        Goal::firstOrCreate(
-            [
-                'user_id' => (string) $user->_id,
+        if (!Goal::where('user_id', $userId)->where('name', 'Emergency Fund')->exists()) {
+            Goal::create([
+                'user_id' => $userId,
                 'name' => 'Emergency Fund',
-            ],
-            [
                 'target_amount' => 10000000,
                 'current_amount' => 0,
                 'target_date_label' => 'Dec 2026',
                 'linked_wallet' => 'Main Wallet',
                 'contributions' => [],
-            ]
-        );
+            ]);
+        }
 
-        Habit::firstOrCreate(
-            [
-                'user_id' => (string) $user->_id,
+        if (!Habit::where('user_id', $userId)->where('title', 'Daily Expense Log')->exists()) {
+            Habit::create([
+                'user_id' => $userId,
                 'title' => 'Daily Expense Log',
-            ],
-            [
                 'description' => 'Log all expenses every day.',
                 'target_count' => 7,
                 'current_count' => 0,
                 'frequency' => 'weekly',
                 'active' => true,
-            ]
-        );
+            ]);
+        }
 
         $plainTextToken = $user->createToken('auth_token')->plainTextToken;
         $token = str_contains($plainTextToken, '|')

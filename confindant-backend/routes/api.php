@@ -13,6 +13,18 @@ use App\Http\Controllers\Api\WalletController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
+    Route::get('/health', function () {
+        return response()->json([
+            'success' => true,
+            'message' => 'Confindant backend is healthy',
+            'data' => [
+                'status' => 'ok',
+                'time' => now()->toIso8601String(),
+                'app_env' => app()->environment(),
+            ],
+        ]);
+    });
+
     Route::post('/register', [UserController::class, 'register']);
     Route::post('/login', [UserController::class, 'login']);
 
