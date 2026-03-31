@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Jobs\ProcessReceiptOcrJob;
 use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\ReceiptOcrFeedback;
@@ -9,6 +10,7 @@ use App\Models\ReceiptOcrJob;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TransactionController extends Controller
@@ -214,39 +216,43 @@ class TransactionController extends Controller
         $path = $validated['receipt_image']->store('receipts', 'public');
         $receiptImageUrl = Storage::disk('public')->url($path);
 
-        // Minimal cloud-safe OCR flow: mark success with editable defaults.
         $ocrJob = ReceiptOcrJob::create([
             'user_id' => (string) $request->user()->_id,
-            'status' => 'success',
-            'confidence' => 0.35,
+            'status' => 'pending',
+            'confidence' => 0,
             'error_code' => null,
             'error_message' => null,
             'receipt_image_url' => $receiptImageUrl,
             'raw' => null,
-            'extracted' => [
-                'merchant_name' => '',
-                'category' => 'General',
-                'total_amount' => 0,
-                'tax_amount' => 0,
-                'service_amount' => 0,
-                'need_want' => 'unknown',
-                'type' => 'expense',
-                'date' => now()->toIso8601String(),
-                'items' => [],
-                'transactions' => [],
-                'field_confidence' => [
-                    'merchant_name' => 0.3,
-                    'category' => 0.3,
-                    'total_amount' => 0.3,
-                    'tax_amount' => 0.3,
-                    'service_amount' => 0.3,
-                    'need_want' => 0.3,
-                    'date' => 0.3,
-                ],
-            ],
+            'extracted' => null,
+            'queued_at' => now(),
+            'started_at' => null,
+            'finished_at' => null,
         ]);
 
-        return $this->ok($ocrJob, 'OCR job submitted', [], 202);
+        try {
+            // Railway free tier: run sync so user does not need queue worker setup.
+            ProcessReceiptOcrJob::dispatchSync((string) $ocrJob->_id);
+        } catch (\Throwable $e) {
+            Log::error('ocr_job_dispatch_sync_failed', [
+                'job_id' => (string) $ocrJob->_id,
+                'user_id' => (string) $request->user()->_id,
+                'message' => $e->getMessage(),
+            ]);
+            $ocrJob->update([
+                'status' => 'failed',
+                'confidence' => 0,
+                'error_code' => 'provider_error',
+                'error_message' => $this->compactErrorMessage($e->getMessage()),
+                'finished_at' => now(),
+                'raw' => [
+                    'truncated' => true,
+                    'preview' => substr((string) $e->getMessage(), 0, 1000),
+                ],
+            ]);
+        }
+
+        return $this->ok($ocrJob->fresh(), 'OCR job submitted', [], 202);
     }
 
     public function getOcr(Request $request, string $id)
@@ -292,31 +298,59 @@ class TransactionController extends Controller
             'items' => 'nullable|array',
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:64',
+            'transactions' => 'nullable|array|min:1|max:50',
+            'transactions.*.wallet_id' => 'nullable|string',
+            'transactions.*.type' => 'required_with:transactions|in:income,expense',
+            'transactions.*.source' => 'nullable|string|max:255',
+            'transactions.*.category' => 'nullable|string|max:255',
+            'transactions.*.total_amount' => 'required_with:transactions|numeric|min:0',
+            'transactions.*.tax_amount' => 'nullable|numeric|min:0',
+            'transactions.*.service_amount' => 'nullable|numeric|min:0',
+            'transactions.*.need_want' => 'nullable|in:needs,wants,mixed,unknown',
+            'transactions.*.date' => 'required_with:transactions|date',
+            'transactions.*.merchant_name' => 'nullable|string|max:255',
+            'transactions.*.notes' => 'nullable|string',
+            'transactions.*.is_verified' => 'nullable|boolean',
+            'transactions.*.items' => 'nullable|array',
+            'transactions.*.tags' => 'nullable|array',
+            'transactions.*.tags.*' => 'string|max:64',
         ]);
 
         $userId = (string) $request->user()->_id;
-        $wallet = $this->findOwnedWallet($userId, (string) $validated['wallet_id']);
-        if (!$wallet) {
-            return $this->fail('Wallet tidak ditemukan', [], 404);
+        if (!empty($validated['transactions']) && is_array($validated['transactions'])) {
+            $createdTransactions = [];
+            foreach ($validated['transactions'] as $entry) {
+                $payload = [
+                    'wallet_id' => $entry['wallet_id'] ?? $validated['wallet_id'],
+                    'type' => $entry['type'] ?? $validated['type'],
+                    'source' => $entry['source'] ?? null,
+                    'category' => $entry['category'] ?? null,
+                    'total_amount' => $entry['total_amount'] ?? 0,
+                    'tax_amount' => $entry['tax_amount'] ?? 0,
+                    'service_amount' => $entry['service_amount'] ?? 0,
+                    'need_want' => $entry['need_want'] ?? 'unknown',
+                    'date' => $entry['date'] ?? now()->toIso8601String(),
+                    'merchant_name' => $entry['merchant_name'] ?? null,
+                    'notes' => $entry['notes'] ?? null,
+                    'is_verified' => $entry['is_verified'] ?? true,
+                    'items' => $entry['items'] ?? [],
+                    'tags' => $entry['tags'] ?? [],
+                ];
+
+                $createdTransactions[] = $this->commitSingleOcrPayload(
+                    $userId,
+                    $payload,
+                    $ocrJob
+                );
+            }
+
+            return $this->ok([
+                'transactions' => $createdTransactions,
+                'count' => count($createdTransactions),
+            ], 'OCR result committed ke multi transaksi', [], 201);
         }
 
-        $source = $validated['source'] ?? ($validated['type'] === 'income' ? 'Other' : null);
-        $signedAmount = $this->signedAmount((string) $validated['type'], (float) $validated['total_amount']);
-        $newBalance = (float) $wallet->balance + $signedAmount;
-        if ($newBalance < 0) {
-            return $this->fail('Saldo wallet tidak mencukupi untuk expense ini', [], 422);
-        }
-
-        $transaction = Transaction::create([
-            ...$validated,
-            'source' => $source,
-            'receipt_image_url' => $ocrJob->receipt_image_url,
-            'is_verified' => $validated['is_verified'] ?? true,
-            'user_id' => $userId,
-        ]);
-
-        $wallet->increment('balance', $signedAmount);
-
+        $transaction = $this->commitSingleOcrPayload($userId, $validated, $ocrJob);
         return $this->ok($transaction, 'OCR result committed ke transaksi', [], 201);
     }
 
@@ -368,5 +402,73 @@ class TransactionController extends Controller
     private function signedAmount(string $type, float $amount): float
     {
         return $type === 'income' ? $amount : (-1 * $amount);
+    }
+
+    private function commitSingleOcrPayload(string $userId, array $payload, ReceiptOcrJob $ocrJob): Transaction
+    {
+        $wallet = $this->findOwnedWallet($userId, (string) $payload['wallet_id']);
+        if (!$wallet) {
+            abort(response()->json([
+                'success' => false,
+                'message' => 'Wallet tidak ditemukan',
+                'data' => null,
+                'errors' => (object) [],
+            ], 404));
+        }
+
+        $source = $payload['source'] ?? (($payload['type'] ?? 'expense') === 'income' ? 'Other' : null);
+        $signedAmount = $this->signedAmount((string) ($payload['type'] ?? 'expense'), (float) ($payload['total_amount'] ?? 0));
+        $newBalance = (float) $wallet->balance + $signedAmount;
+        if ($newBalance < 0) {
+            abort(response()->json([
+                'success' => false,
+                'message' => 'Saldo wallet tidak mencukupi untuk expense ini',
+                'data' => null,
+                'errors' => (object) [],
+            ], 422));
+        }
+
+        $transaction = Transaction::create([
+            ...$payload,
+            'source' => $source,
+            'receipt_image_url' => $ocrJob->receipt_image_url,
+            'is_verified' => $payload['is_verified'] ?? true,
+            'user_id' => $userId,
+            'tags' => $this->normalizeTags($payload['tags'] ?? []),
+        ]);
+        $wallet->increment('balance', $signedAmount);
+
+        return $transaction;
+    }
+
+    /**
+     * @param array<int, mixed> $tags
+     * @return array<int, string>
+     */
+    private function normalizeTags(array $tags): array
+    {
+        $normalized = [];
+        foreach ($tags as $tag) {
+            $value = trim((string) $tag);
+            if ($value === '') {
+                continue;
+            }
+            $normalized[] = mb_strtolower($value);
+        }
+
+        return array_values(array_unique($normalized));
+    }
+
+    private function compactErrorMessage(string $message): string
+    {
+        $trimmed = trim($message);
+        if ($trimmed === '') {
+            return 'Unknown OCR processing error';
+        }
+        if (strlen($trimmed) <= 300) {
+            return $trimmed;
+        }
+
+        return substr($trimmed, 0, 300).'...';
     }
 }

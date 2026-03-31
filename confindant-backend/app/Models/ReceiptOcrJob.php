@@ -18,12 +18,17 @@ class ReceiptOcrJob extends Model
         'receipt_image_url',
         'raw',
         'extracted',
+        'queued_at',
+        'started_at',
+        'finished_at',
     ];
 
     protected $casts = [
         'confidence' => 'float',
         'raw' => 'array',
         'extracted' => 'array',
+        'queued_at' => 'datetime',
+        'started_at' => 'datetime',
+        'finished_at' => 'datetime',
     ];
 }
-

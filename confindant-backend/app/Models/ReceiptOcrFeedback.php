@@ -27,6 +27,8 @@ class ReceiptOcrFeedback extends Model
         'changed_fields' => 'array',
         'field_confidence' => 'array',
         'meta' => 'array',
+        'edited_field_count' => 'integer',
+        'created_at_client' => 'datetime',
     ];
 }
 
