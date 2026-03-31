@@ -33,6 +33,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [UserController::class, 'logout']);
         Route::get('/users', [UserController::class, 'index']);
 
+        Route::post('/wallets/recalculate-balances', [WalletController::class, 'recalculateBalances']);
         Route::apiResource('wallets', WalletController::class);
         Route::apiResource('budgets', BudgetController::class);
         Route::apiResource('transactions', TransactionController::class);
