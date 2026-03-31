@@ -17,7 +17,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install PHP deps first for better layer caching
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist --no-scripts
 
 # Copy app source
 COPY . .
@@ -26,8 +26,10 @@ COPY . .
 RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Run Laravel package discovery after full source is present
+RUN php artisan package:discover --ansi
+
 EXPOSE 10000
 
 # Render provides $PORT
 CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
-
