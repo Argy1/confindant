@@ -36,8 +36,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/wallets/recalculate-balances', [WalletController::class, 'recalculateBalances']);
         Route::apiResource('wallets', WalletController::class);
         Route::apiResource('budgets', BudgetController::class);
-        Route::apiResource('transactions', TransactionController::class);
         Route::post('/transactions/scan-upload', [TransactionController::class, 'scanUpload']);
+        Route::post('/transactions/scan-ocr', [TransactionController::class, 'submitOcr']);
+        Route::get('/transactions/scan-ocr/{id}', [TransactionController::class, 'getOcr']);
+        Route::post('/transactions/scan-ocr/{id}/commit', [TransactionController::class, 'commitOcr']);
+        Route::post('/transactions/scan-ocr/{id}/feedback', [TransactionController::class, 'submitOcrFeedback']);
+        Route::apiResource('transactions', TransactionController::class);
 
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/analytics', [AnalyticsController::class, 'index']);

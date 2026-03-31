@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Models\ReceiptOcrFeedback;
+use App\Models\ReceiptOcrJob;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
@@ -201,6 +203,159 @@ class TransactionController extends Controller
         $wallet->increment('balance', $signedAmount);
 
         return $this->ok($transaction, 'Receipt berhasil diupload dan transaksi disimpan', [], 201);
+    }
+
+    public function submitOcr(Request $request)
+    {
+        $validated = $request->validate([
+            'receipt_image' => 'required|file|image|max:5120',
+        ]);
+
+        $path = $validated['receipt_image']->store('receipts', 'public');
+        $receiptImageUrl = Storage::disk('public')->url($path);
+
+        // Minimal cloud-safe OCR flow: mark success with editable defaults.
+        $ocrJob = ReceiptOcrJob::create([
+            'user_id' => (string) $request->user()->_id,
+            'status' => 'success',
+            'confidence' => 0.35,
+            'error_code' => null,
+            'error_message' => null,
+            'receipt_image_url' => $receiptImageUrl,
+            'raw' => null,
+            'extracted' => [
+                'merchant_name' => '',
+                'category' => 'General',
+                'total_amount' => 0,
+                'tax_amount' => 0,
+                'service_amount' => 0,
+                'need_want' => 'unknown',
+                'type' => 'expense',
+                'date' => now()->toIso8601String(),
+                'items' => [],
+                'transactions' => [],
+                'field_confidence' => [
+                    'merchant_name' => 0.3,
+                    'category' => 0.3,
+                    'total_amount' => 0.3,
+                    'tax_amount' => 0.3,
+                    'service_amount' => 0.3,
+                    'need_want' => 0.3,
+                    'date' => 0.3,
+                ],
+            ],
+        ]);
+
+        return $this->ok($ocrJob, 'OCR job submitted', [], 202);
+    }
+
+    public function getOcr(Request $request, string $id)
+    {
+        $ocrJob = ReceiptOcrJob::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$ocrJob) {
+            return $this->fail('OCR job tidak ditemukan', [], 404);
+        }
+
+        return $this->ok($ocrJob, 'OCR job detail berhasil diambil');
+    }
+
+    public function commitOcr(Request $request, string $id)
+    {
+        $ocrJob = ReceiptOcrJob::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$ocrJob) {
+            return $this->fail('OCR job tidak ditemukan', [], 404);
+        }
+
+        if ($ocrJob->status !== 'success') {
+            return $this->fail('OCR job belum siap untuk commit', [], 422);
+        }
+
+        $validated = $request->validate([
+            'wallet_id' => 'required|string',
+            'type' => 'required|in:income,expense',
+            'category' => 'nullable|string|max:255',
+            'source' => 'nullable|string|max:255',
+            'total_amount' => 'required|numeric|min:0',
+            'tax_amount' => 'nullable|numeric|min:0',
+            'service_amount' => 'nullable|numeric|min:0',
+            'need_want' => 'nullable|in:needs,wants,mixed,unknown',
+            'date' => 'required|date',
+            'merchant_name' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'is_verified' => 'nullable|boolean',
+            'items' => 'nullable|array',
+            'tags' => 'nullable|array',
+            'tags.*' => 'string|max:64',
+        ]);
+
+        $userId = (string) $request->user()->_id;
+        $wallet = $this->findOwnedWallet($userId, (string) $validated['wallet_id']);
+        if (!$wallet) {
+            return $this->fail('Wallet tidak ditemukan', [], 404);
+        }
+
+        $source = $validated['source'] ?? ($validated['type'] === 'income' ? 'Other' : null);
+        $signedAmount = $this->signedAmount((string) $validated['type'], (float) $validated['total_amount']);
+        $newBalance = (float) $wallet->balance + $signedAmount;
+        if ($newBalance < 0) {
+            return $this->fail('Saldo wallet tidak mencukupi untuk expense ini', [], 422);
+        }
+
+        $transaction = Transaction::create([
+            ...$validated,
+            'source' => $source,
+            'receipt_image_url' => $ocrJob->receipt_image_url,
+            'is_verified' => $validated['is_verified'] ?? true,
+            'user_id' => $userId,
+        ]);
+
+        $wallet->increment('balance', $signedAmount);
+
+        return $this->ok($transaction, 'OCR result committed ke transaksi', [], 201);
+    }
+
+    public function submitOcrFeedback(Request $request, string $id)
+    {
+        $ocrJob = ReceiptOcrJob::where('_id', $id)
+            ->where('user_id', (string) $request->user()->_id)
+            ->first();
+
+        if (!$ocrJob) {
+            return $this->fail('OCR job tidak ditemukan', [], 404);
+        }
+
+        $validated = $request->validate([
+            'transaction_id' => 'nullable|string',
+            'accepted' => 'required|boolean',
+            'source_mode' => 'required|string|max:64',
+            'changed_fields' => 'nullable|array',
+            'changed_fields.*' => 'string|max:64',
+            'edited_field_count' => 'nullable|integer|min:0|max:50',
+            'field_confidence' => 'nullable|array',
+            'meta' => 'nullable|array',
+            'created_at_client' => 'nullable|date',
+        ]);
+
+        $feedback = ReceiptOcrFeedback::create([
+            'user_id' => (string) $request->user()->_id,
+            'ocr_job_id' => (string) $ocrJob->_id,
+            'transaction_id' => $validated['transaction_id'] ?? null,
+            'accepted' => (bool) $validated['accepted'],
+            'source_mode' => (string) $validated['source_mode'],
+            'changed_fields' => $validated['changed_fields'] ?? [],
+            'edited_field_count' => (int) ($validated['edited_field_count'] ?? count($validated['changed_fields'] ?? [])),
+            'field_confidence' => $validated['field_confidence'] ?? null,
+            'meta' => $validated['meta'] ?? null,
+            'created_at_client' => $validated['created_at_client'] ?? null,
+        ]);
+
+        return $this->ok($feedback, 'OCR feedback berhasil disimpan', [], 201);
     }
 
     private function findOwnedWallet(string $userId, string $walletId): ?Wallet
