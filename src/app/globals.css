@@ -1,26 +1,180 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Confindant brand palette (mirrors confindant-mobile/lib/core/theme/app_colors.dart) */
+  --navy-900: #000314;
+  --blue-900: #0a2472;
+  --blue-700: #114b9c;
+  --blue-600: #0e6ba8;
+  --blue-500: #2b87c8;
+
+  --text-primary: #1e2939;
+  --text-secondary: #4a5565;
+  --text-tertiary: #6a7282;
+
+  --surface: #ffffff;
+  --surface-muted: #f5f7fa;
+  --border-soft: #d1d5dc;
+  --divider: #e5e7eb;
+
+  --info-bg: #eff6ff;
+  --info-stroke: #a6e1fa;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --danger: #dc2626;
+
+  /* shadcn semantic mapping */
+  --background: #f5f7fa;
+  --foreground: var(--text-primary);
+  --card: #ffffff;
+  --card-foreground: var(--text-primary);
+  --popover: #ffffff;
+  --popover-foreground: var(--text-primary);
+  --primary: var(--blue-900);
+  --primary-foreground: #ffffff;
+  --secondary: #eef2f7;
+  --secondary-foreground: var(--text-primary);
+  --muted: #eef2f7;
+  --muted-foreground: var(--text-secondary);
+  --accent: #e7eef8;
+  --accent-foreground: var(--blue-900);
+  --destructive: var(--danger);
+  --destructive-foreground: #ffffff;
+  --input: #e2e8f0;
+  --ring: var(--blue-600);
+  --radius: 0.875rem;
+  --border: var(--border-soft);
+}
+
+.dark {
+  --background: var(--navy-900);
+  --foreground: #ffffff;
+  --card: #0d1730;
+  --card-foreground: #ffffff;
+  --popover: #0d1730;
+  --popover-foreground: #ffffff;
+  --primary: #4d8dd0;
+  --primary-foreground: var(--navy-900);
+  --secondary: #18223e;
+  --secondary-foreground: #ffffff;
+  --muted: #18223e;
+  --muted-foreground: #9aa6bd;
+  --accent: #1a2747;
+  --accent-foreground: #ffffff;
+  --border: #243056;
+  --input: #243056;
+  --ring: #4d8dd0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-navy-900: var(--navy-900);
+  --color-blue-900: var(--blue-900);
+  --color-blue-700: var(--blue-700);
+  --color-blue-600: var(--blue-600);
+  --color-blue-500: var(--blue-500);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-info-bg: var(--info-bg);
+  --color-info-stroke: var(--info-stroke);
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: "Gill Sans MT", "Gill Sans", "Trebuchet MS", "Inter",
+    sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
+
+  .gradient-hero {
+    background-image: linear-gradient(
+      135deg,
+      var(--navy-900) 0%,
+      var(--blue-900) 55%,
+      var(--blue-600) 100%
+    );
+  }
+
+  .gradient-soft {
+    background-image: linear-gradient(
+      180deg,
+      rgba(14, 107, 168, 0.05),
+      rgba(14, 107, 168, 0)
+    );
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .glass-dark {
+    background: rgba(13, 23, 48, 0.55);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+  background-clip: padding-box;
+  border: 2px solid transparent;
 }

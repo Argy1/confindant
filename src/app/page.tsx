@@ -1,65 +1,268 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import * as React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  ArrowRight,
+  BarChart3,
+  Camera,
+  PiggyBank,
+  ShieldCheck,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store/auth";
+
+export default function LandingPage() {
+  const router = useRouter();
+  const { token, hydrated } = useAuthStore();
+
+  React.useEffect(() => {
+    if (hydrated && token) router.replace("/home");
+  }, [hydrated, token, router]);
+
+  const features = [
+    {
+      icon: Wallet,
+      title: "Multi-wallet",
+      desc: "Kelola banyak dompet, transfer antar wallet, dan pantau saldo real-time.",
+    },
+    {
+      icon: Camera,
+      title: "Scan Struk OCR",
+      desc: "Foto struk → otomatis dibaca AI dan jadi transaksi tervalidasi.",
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics Pintar",
+      desc: "Insight pengeluaran berdasarkan kategori, tag, dan periode.",
+    },
+    {
+      icon: PiggyBank,
+      title: "Goals & Budget",
+      desc: "Target tabungan dengan auto-topup dan budget per kategori.",
+    },
+    {
+      icon: Sparkles,
+      title: "AI Finance Chat",
+      desc: "Tanya keuangan kamu dalam bahasa natural, jawaban langsung dari data.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Aman & Privat",
+      desc: "Token-based auth, terenkripsi, dan tidak ada data yang dijual.",
+    },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="min-h-screen bg-background">
+      <header className="sticky top-0 z-30 border-b border-border/50 bg-background/80 backdrop-blur-md">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="grid h-9 w-9 place-items-center rounded-xl gradient-hero">
+              <Wallet className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-display text-xl font-bold tracking-tight">
+              Confindant
+            </span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild className="hidden sm:inline-flex">
+              <Link href="/login">Masuk</Link>
+            </Button>
+            <Button asChild variant="gradient">
+              <Link href="/register">
+                Mulai Gratis <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 -z-10 gradient-hero opacity-95" />
+        <div
+          className="absolute inset-0 -z-10 opacity-40"
+          style={{
+            backgroundImage:
+              "radial-gradient(closest-side, rgba(255,255,255,0.25), transparent 70%)",
+            backgroundSize: "60% 60%",
+            backgroundPosition: "right top",
+            backgroundRepeat: "no-repeat",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <div className="container mx-auto px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div className="text-white">
+              <Badge
+                variant="info"
+                className="mb-5 border-white/30 bg-white/15 text-white backdrop-blur"
+              >
+                <Sparkles className="mr-1 h-3 w-3" /> Powered by AI
+              </Badge>
+              <h1 className="font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+                Kelola Keuangan, <br className="hidden sm:block" />
+                Lebih <span className="text-blue-500">Cerdas</span>.
+              </h1>
+              <p className="mt-5 max-w-xl text-base text-white/80 sm:text-lg">
+                Confindant bantu kamu lacak setiap pengeluaran, scan struk
+                otomatis, kelola budget per kategori, dan dapatkan insight
+                personal — semua di satu tempat.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild size="lg" className="bg-white text-blue-900 hover:bg-white/90">
+                  <Link href="/register">
+                    Buat Akun Gratis <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="ghost"
+                  className="border border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                >
+                  <Link href="/login">Sudah Punya Akun</Link>
+                </Button>
+              </div>
+              <div className="mt-10 flex flex-wrap items-center gap-6 text-sm text-white/70">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-blue-500" />
+                  Token-based auth
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-blue-500" />
+                  Gemini AI categorization
+                </div>
+                <div className="flex items-center gap-2">
+                  <Camera className="h-4 w-4 text-blue-500" />
+                  OCR receipt scanner
+                </div>
+              </div>
+            </div>
+
+            {/* Hero card preview */}
+            <div className="relative">
+              <div className="absolute -inset-4 -z-10 rounded-3xl bg-white/5 blur-3xl" />
+              <Card className="overflow-hidden border-white/10 bg-white/95 shadow-2xl backdrop-blur">
+                <CardContent className="p-0">
+                  <div className="gradient-hero p-6 text-white">
+                    <p className="text-xs uppercase tracking-wider text-white/60">
+                      Total Saldo
+                    </p>
+                    <p className="font-display text-3xl font-bold sm:text-4xl">
+                      Rp 24.580.000
+                    </p>
+                    <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                      <div className="rounded-lg bg-white/10 p-3">
+                        <p className="text-white/60">Pemasukan</p>
+                        <p className="text-base font-semibold text-success">
+                          + Rp 8.2M
+                        </p>
+                      </div>
+                      <div className="rounded-lg bg-white/10 p-3">
+                        <p className="text-white/60">Pengeluaran</p>
+                        <p className="text-base font-semibold text-warning">
+                          − Rp 3.6M
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2 p-4">
+                    {[
+                      { label: "Starbucks Coffee", cat: "Food", amt: -45000 },
+                      { label: "Gaji Bulanan", cat: "Income", amt: 8200000 },
+                      { label: "Indomaret", cat: "Groceries", amt: -127500 },
+                    ].map((tx) => (
+                      <div
+                        key={tx.label}
+                        className="flex items-center justify-between rounded-lg p-2 hover:bg-muted"
+                      >
+                        <div>
+                          <p className="text-sm font-medium">{tx.label}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {tx.cat}
+                          </p>
+                        </div>
+                        <p
+                          className={`text-sm font-semibold ${
+                            tx.amt > 0 ? "text-success" : "text-foreground"
+                          }`}
+                        >
+                          {tx.amt > 0 ? "+" : ""}
+                          {new Intl.NumberFormat("id-ID").format(tx.amt)}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="container mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+        <div className="mx-auto max-w-2xl text-center">
+          <Badge variant="info" className="mb-3">
+            Semua yang kamu butuhkan
+          </Badge>
+          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+            Fitur lengkap untuk personal finance
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Web companion untuk Confindant mobile — semua fitur, di layar yang
+            lebih luas.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f) => (
+            <Card key={f.title} className="transition-all hover:-translate-y-1 hover:shadow-md">
+              <CardContent className="p-6">
+                <div className="grid h-11 w-11 place-items-center rounded-xl bg-info-bg text-blue-900">
+                  <f.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-4 font-semibold">{f.title}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">{f.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* CTA */}
+      <section className="container mx-auto px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="overflow-hidden rounded-3xl gradient-hero p-8 text-center text-white sm:p-12">
+          <h2 className="font-display text-2xl font-bold sm:text-3xl">
+            Siap kelola uang lebih baik?
+          </h2>
+          <p className="mt-2 text-white/80">
+            Gratis, tidak ada kartu kredit. Mulai sekarang dalam 30 detik.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button asChild size="lg" className="bg-white text-blue-900 hover:bg-white/90">
+              <Link href="/register">
+                Buat Akun Sekarang <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-border bg-card">
+        <div className="container mx-auto flex flex-col gap-3 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <p>© {new Date().getFullYear()} Confindant. All rights reserved.</p>
+          <p className="text-xs">
+            Made with care · Web port by Claude · Backend Laravel · Frontend
+            Next.js
+          </p>
+        </div>
+      </footer>
+    </main>
   );
 }
