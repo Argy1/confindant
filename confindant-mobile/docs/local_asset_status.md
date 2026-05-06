@@ -1,0 +1,153 @@
+# Local Asset Status - Confindant
+
+- Audit date: 2026-03-11
+- Remote asset URL references in lib/: **0**
+- Referenced local asset paths in lib/: **33**
+- Missing referenced local assets: **0**
+- pubspec.yaml asset roots complete: **yes** (assets/images/, assets/icons/, assets/illustrations/, assets/avatars/)
+
+## Localized assets (all current local files)
+
+- Total localized assets: **124**
+- Icons: **110**
+- Illustrations: **7**
+- Avatars: **5**
+- Images: **2**
+
+### Assets
+- assets/avatars/analytics_avatar.png
+- assets/avatars/home_avatar.png
+- assets/avatars/legacy_avatar.jpg
+- assets/avatars/profile_kennedy.jpg
+- assets/avatars/wallet_avatar.png
+- assets/icons/analytics/analytics_active.svg
+- assets/icons/analytics/home_outline.svg
+- assets/icons/analytics/notification_group.svg
+- assets/icons/analytics/profile_outline.svg
+- assets/icons/analytics/scan_center.svg
+- assets/icons/analytics/wallet_outline_vec1.svg
+- assets/icons/analytics/wallet_outline_vec2.svg
+- assets/icons/analytics/wallet_outline_vec3.svg
+- assets/icons/auth/login_eye_vec1.svg
+- assets/icons/auth/login_eye_vec2.svg
+- assets/icons/auth/login_lock.svg
+- assets/icons/auth/login_mail.svg
+- assets/icons/auth/login_wallet.svg
+- assets/icons/auth/register_eye_vec1.svg
+- assets/icons/auth/register_eye_vec2.svg
+- assets/icons/auth/register_lock.svg
+- assets/icons/auth/register_mail.svg
+- assets/icons/auth/register_user.svg
+- assets/icons/auth/register_wallet.svg
+- assets/icons/common/statusbar/battery_analytics.svg
+- assets/icons/common/statusbar/battery_home.svg
+- assets/icons/common/statusbar/battery_profile.svg
+- assets/icons/common/statusbar/battery_scan.svg
+- assets/icons/common/statusbar/battery_scan_receipt.svg
+- assets/icons/common/statusbar/battery_wallet.svg
+- assets/icons/common/statusbar/cellular_analytics.svg
+- assets/icons/common/statusbar/cellular_home.svg
+- assets/icons/common/statusbar/cellular_profile.svg
+- assets/icons/common/statusbar/cellular_scan.svg
+- assets/icons/common/statusbar/cellular_scan_receipt.svg
+- assets/icons/common/statusbar/cellular_wallet.svg
+- assets/icons/common/statusbar/wifi_analytics.svg
+- assets/icons/common/statusbar/wifi_home.svg
+- assets/icons/common/statusbar/wifi_profile.svg
+- assets/icons/common/statusbar/wifi_scan.svg
+- assets/icons/common/statusbar/wifi_scan_receipt.svg
+- assets/icons/common/statusbar/wifi_wallet.svg
+- assets/icons/home/analytics_outline.svg
+- assets/icons/home/eye_filled.svg
+- assets/icons/home/home_filled.svg
+- assets/icons/home/notification_group.svg
+- assets/icons/home/profile_outline.svg
+- assets/icons/home/scan_center.svg
+- assets/icons/home/trending_down.svg
+- assets/icons/home/trending_up.svg
+- assets/icons/home/wallet_outline_vec1.svg
+- assets/icons/home/wallet_outline_vec2.svg
+- assets/icons/home/wallet_outline_vec3.svg
+- assets/icons/modals/add_wallet_close_vec1.svg
+- assets/icons/modals/add_wallet_close_vec2.svg
+- assets/icons/modals/manage_check.svg
+- assets/icons/modals/manage_close_vec1.svg
+- assets/icons/modals/manage_close_vec2.svg
+- assets/icons/modals/manage_plus_vec1.svg
+- assets/icons/modals/manage_plus_vec2.svg
+- assets/icons/modals/manage2_check.svg
+- assets/icons/modals/manage2_close_vec1.svg
+- assets/icons/modals/manage2_close_vec2.svg
+- assets/icons/modals/manage2_plus_vec1.svg
+- assets/icons/modals/manage2_plus_vec2.svg
+- assets/icons/modals/manage2_trash_vec1.svg
+- assets/icons/modals/manage2_trash_vec2.svg
+- assets/icons/modals/manage2_trash_vec3.svg
+- assets/icons/modals/manage2_trash_vec4.svg
+- assets/icons/onboarding/chevron_right_ob1.svg
+- assets/icons/onboarding/chevron_right_ob2.svg
+- assets/icons/onboarding/chevron_right_ob3.svg
+- assets/icons/onboarding/chevron_right_ob4.svg
+- assets/icons/profile/about.svg
+- assets/icons/profile/analytics_outline.svg
+- assets/icons/profile/change_password.svg
+- assets/icons/profile/chevron_right.svg
+- assets/icons/profile/edit_vec1.svg
+- assets/icons/profile/edit_vec2.svg
+- assets/icons/profile/help_center.svg
+- assets/icons/profile/home_outline.svg
+- assets/icons/profile/logout.svg
+- assets/icons/profile/mail.svg
+- assets/icons/profile/notifications.svg
+- assets/icons/profile/personal_info.svg
+- assets/icons/profile/profile_active.svg
+- assets/icons/profile/scan_center.svg
+- assets/icons/profile/wallet_outline_vec1.svg
+- assets/icons/profile/wallet_outline_vec2.svg
+- assets/icons/profile/wallet_outline_vec3.svg
+- assets/icons/scan/back.svg
+- assets/icons/scan/corner_bl.svg
+- assets/icons/scan/corner_br.svg
+- assets/icons/scan/corner_tl.svg
+- assets/icons/scan/corner_tr.svg
+- assets/icons/scan/flash_vec.svg
+- assets/icons/scan/upload.svg
+- assets/icons/scan_receipt/calendar.svg
+- assets/icons/scan_receipt/check.svg
+- assets/icons/scan_receipt/close.svg
+- assets/icons/scan_receipt/plus.svg
+- assets/icons/scan_receipt/trash_vec1.svg
+- assets/icons/scan_receipt/trash_vec2.svg
+- assets/icons/scan_receipt/trash_vec3.svg
+- assets/icons/scan_receipt/trash_vec4.svg
+- assets/icons/wallet/analytics_outline.svg
+- assets/icons/wallet/home_outline.svg
+- assets/icons/wallet/notification_group.svg
+- assets/icons/wallet/plus.svg
+- assets/icons/wallet/profile_outline.svg
+- assets/icons/wallet/scan_center.svg
+- assets/icons/wallet/target.svg
+- assets/icons/wallet/wallet_active_vec1.svg
+- assets/icons/wallet/wallet_active_vec2.svg
+- assets/icons/wallet/wallet_card_icon.svg
+- assets/illustrations/onboarding/ob1_wallet_vec1.svg
+- assets/illustrations/onboarding/ob1_wallet_vec2.svg
+- assets/illustrations/onboarding/ob2_trend_vec1.svg
+- assets/illustrations/onboarding/ob2_trend_vec2.svg
+- assets/illustrations/onboarding/ob3_budget_vec1.svg
+- assets/illustrations/onboarding/ob3_budget_vec2.svg
+- assets/illustrations/onboarding/ob4_shield_vec1.svg
+- assets/images/scan/receipt_preview.jpg
+- assets/images/scan/receipt_source.jpg
+
+## Naming and folder cleanup completed
+- Moved assets/images/avatar.jpg -> assets/avatars/legacy_avatar.jpg
+- Moved assets/images/receipt.jpg -> assets/images/scan/receipt_preview.jpg
+- Updated Dart references to use feature-grouped paths.
+
+## Still missing
+- None detected from current lib/ references.
+
+## Temporary placeholders still in use
+- None active at runtime from current asset references.
+- Note: fallback placeholder widgets remain in code for defensive rendering when an asset fails to load.

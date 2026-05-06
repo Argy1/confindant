@@ -1,7 +1,30 @@
-# Root-level ignores
+# Root-level artifacts (from old structure)
+.next/
+node_modules/
+.env.local
+.env*.local
+next-env.d.ts
+
+# Web subfolder
 confindant-web/.next/
 confindant-web/node_modules/
 confindant-web/.env*.local
-.next/
-node_modules/
-.env*.local
+confindant-web/next-env.d.ts
+
+# Backend
+confindant-backend/vendor/
+confindant-backend/node_modules/
+confindant-backend/.env
+confindant-backend/storage/app/
+confindant-backend/storage/logs/
+confindant-backend/bootstrap/cache/
+
+# Mobile
+confindant-mobile/build/
+confindant-mobile/.dart_tool/
+confindant-mobile/.idea/
+confindant-mobile/assets.zip
+
+# General
+*.log
+.DS_Store
