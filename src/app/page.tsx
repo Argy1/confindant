@@ -84,10 +84,9 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10 gradient-hero opacity-95" />
+      <section className="relative overflow-hidden gradient-hero">
         <div
-          className="absolute inset-0 -z-10 opacity-40"
+          className="pointer-events-none absolute inset-0 opacity-40"
           style={{
             backgroundImage:
               "radial-gradient(closest-side, rgba(255,255,255,0.25), transparent 70%)",
