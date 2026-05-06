@@ -40,14 +40,25 @@ export default function TransactionsPage() {
     return () => clearTimeout(t);
   }, [q]);
 
-  React.useEffect(() => {
-    setPage(1);
-  }, [type, walletId, debouncedQ]);
-
   const { data: wallets } = useQuery({
     queryKey: ["wallets"],
     queryFn: walletsApi.list,
   });
+
+  const updateType = (value: string) => {
+    setType(value as "all" | TxType);
+    setPage(1);
+  };
+
+  const updateWalletId = (value: string) => {
+    setWalletId(value);
+    setPage(1);
+  };
+
+  const updateSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setQ(event.target.value);
+    setPage(1);
+  };
 
   const params = React.useMemo(
     () => ({
@@ -98,7 +109,7 @@ export default function TransactionsPage() {
       <Card>
         <CardContent className="space-y-3 p-4 sm:space-y-4">
           <div className="flex flex-wrap items-center gap-3">
-            <Tabs value={type} onValueChange={(v) => setType(v as typeof type)}>
+            <Tabs value={type} onValueChange={updateType}>
               <TabsList>
                 <TabsTrigger value="all">Semua</TabsTrigger>
                 <TabsTrigger value="income">Pemasukan</TabsTrigger>
@@ -107,7 +118,7 @@ export default function TransactionsPage() {
             </Tabs>
 
             <div className="ml-auto flex flex-wrap items-center gap-2">
-              <Select value={walletId} onValueChange={setWalletId}>
+              <Select value={walletId} onValueChange={updateWalletId}>
                 <SelectTrigger className="h-10 w-[160px]">
                   <Filter className="mr-1 h-4 w-4 opacity-60" />
                   <SelectValue />
@@ -129,7 +140,7 @@ export default function TransactionsPage() {
             <Input
               placeholder="Cari merchant, kategori, tag, atau catatan…"
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={updateSearch}
               className="pl-10"
             />
           </div>

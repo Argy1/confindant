@@ -48,9 +48,7 @@ export default function ScanPage() {
     queryFn: walletsApi.list,
   });
 
-  React.useEffect(() => {
-    if (wallets?.[0] && !walletId) setWalletId(wallets[0].id);
-  }, [wallets, walletId]);
+  const selectedWalletId = walletId || wallets?.[0]?.id || "";
 
   const upload = useMutation({
     mutationFn: async (f: File) => transactionsApi.scanUpload(f),
@@ -85,7 +83,7 @@ export default function ScanPage() {
   const commit = useMutation({
     mutationFn: () =>
       transactionsApi.scanOcrCommit(job!.id, {
-        wallet_id: walletId,
+        wallet_id: selectedWalletId,
         category: category || null,
         notes: notes || null,
       }),
@@ -242,7 +240,10 @@ export default function ScanPage() {
                 <div className="space-y-3 border-t border-border pt-3">
                   <div className="space-y-1.5">
                     <Label>Wallet</Label>
-                    <Select value={walletId} onValueChange={setWalletId}>
+                    <Select
+                      value={selectedWalletId}
+                      onValueChange={setWalletId}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Pilih wallet" />
                       </SelectTrigger>
@@ -279,7 +280,9 @@ export default function ScanPage() {
                     className="w-full"
                     onClick={() => commit.mutate()}
                     disabled={
-                      job?.status !== "completed" || !walletId || commit.isPending
+                      job?.status !== "completed" ||
+                      !selectedWalletId ||
+                      commit.isPending
                     }
                     loading={commit.isPending}
                   >
