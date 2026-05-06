@@ -82,9 +82,9 @@ export const transactionsApi = {
   },
   async scanUpload(file: File) {
     const form = new FormData();
-    form.append("image", file);
+    form.append("receipt_image", file);
     const { data } = await api.post<ApiEnvelope<{ id: string; status: string }>>(
-      "/transactions/scan-upload",
+      "/transactions/scan-ocr",
       form,
       { headers: { "Content-Type": "multipart/form-data" } },
     );
