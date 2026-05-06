@@ -18,11 +18,12 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
-const HERO_GRADIENT =
-  "linear-gradient(135deg, #000314 0%, #0a2472 50%, #0e6ba8 100%)";
-const BRAND_GRADIENT = "linear-gradient(135deg, #0a2472 0%, #0e6ba8 100%)";
-const CARD_HEAD_GRADIENT =
-  "linear-gradient(135deg, #000314 0%, #0a2472 60%, #114b9c 100%)";
+/* ─── Brand colours (exact palette) ─────────────────────────────────── */
+const NAVY    = "#000314";
+const BLUE900  = "#0a2472";
+const BLUE700  = "#114b9c";
+const BLUE600  = "#0e6ba8";
+const BLUE500  = "#2b87c8";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -33,35 +34,51 @@ export default function LandingPage() {
   }, [hydrated, token, router]);
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white text-slate-900">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+    <main
+      style={{ backgroundColor: NAVY, color: "#ffffff" }}
+      className="min-h-screen overflow-x-hidden"
+    >
+      {/* ── Header ──────────────────────────────────────────────────── */}
+      <header
+        className="sticky top-0 z-50 backdrop-blur-xl"
+        style={{
+          backgroundColor: "rgba(0,3,20,0.85)",
+          borderBottom: `1px solid rgba(255,255,255,0.08)`,
+        }}
+      >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <div
-              className="grid h-9 w-9 place-items-center rounded-xl shadow-md shadow-blue-900/20"
-              style={{ background: BRAND_GRADIENT }}
+              className="grid h-9 w-9 place-items-center rounded-xl"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${BLUE900}, ${BLUE600})`,
+                boxShadow: `0 4px 14px rgba(14,107,168,0.45)`,
+              }}
             >
               <Wallet className="h-5 w-5 text-white" />
             </div>
             <span
-              className="font-display text-xl font-bold tracking-tight"
+              className="text-xl font-bold tracking-tight text-white"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Confindant
             </span>
           </Link>
+
           <div className="flex items-center gap-2">
             <Link
               href="/login"
-              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 sm:inline-flex"
+              className="hidden rounded-lg px-4 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white sm:inline-flex"
             >
               Masuk
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition-all hover:shadow-xl hover:shadow-blue-900/30 active:translate-y-px"
-              style={{ background: BRAND_GRADIENT }}
+              className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 active:translate-y-px"
+              style={{
+                backgroundImage: `linear-gradient(135deg, ${BLUE700}, ${BLUE500})`,
+                boxShadow: `0 4px 20px rgba(43,135,200,0.35)`,
+              }}
             >
               Mulai Gratis <ArrowRight className="h-4 w-4" />
             </Link>
@@ -69,58 +86,67 @@ export default function LandingPage() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* ── Hero ────────────────────────────────────────────────────── */}
       <section
-        className="relative overflow-hidden text-white"
-        style={{ background: HERO_GRADIENT }}
+        className="relative overflow-hidden"
+        style={{
+          backgroundImage: `linear-gradient(135deg, ${NAVY} 0%, ${BLUE900} 55%, ${BLUE600} 100%)`,
+        }}
       >
-        {/* Decorative orbs */}
-        <div
-          className="pointer-events-none absolute -right-24 -top-24 h-112 w-md rounded-full blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(43,135,200,0.45), transparent 70%)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute -bottom-32 -left-24 h-112 w-md rounded-full blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(14,107,168,0.35), transparent 70%)",
-          }}
-        />
-        {/* Grid pattern */}
+        {/* Glow orbs */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
+          className="pointer-events-none absolute right-0 top-0 h-[40rem] w-[40rem] -translate-y-1/2 translate-x-1/3 rounded-full"
           style={{
-            backgroundImage:
-              "linear-gradient(white 1px, transparent 1px), linear-gradient(90deg, white 1px, transparent 1px)",
+            background: `radial-gradient(circle, rgba(43,135,200,0.35) 0%, transparent 70%)`,
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute bottom-0 left-0 h-[32rem] w-[32rem] translate-y-1/2 -translate-x-1/3 rounded-full"
+          style={{
+            background: `radial-gradient(circle, rgba(14,107,168,0.3) 0%, transparent 70%)`,
+          }}
+        />
+        {/* Subtle grid */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)`,
             backgroundSize: "44px 44px",
           }}
         />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
+        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-36">
+          <div className="grid items-center gap-14 lg:grid-cols-2">
+            {/* Left — copy */}
             <div>
-              <div className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/95 backdrop-blur">
-                <Sparkles className="h-3.5 w-3.5 text-blue-300" />
+              <div
+                className="mb-5 inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold text-white"
+                style={{
+                  backgroundColor: "rgba(43,135,200,0.18)",
+                  border: "1px solid rgba(43,135,200,0.35)",
+                }}
+              >
+                <Sparkles className="h-3.5 w-3.5" style={{ color: BLUE500 }} />
                 Powered by Gemini AI
               </div>
+
               <h1
-                className="mt-5 font-bold leading-[1.05] tracking-tight"
+                className="font-bold leading-tight tracking-tight text-white"
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(2.5rem, 5.5vw, 4.5rem)",
-                  letterSpacing: "-0.02em",
+                  fontSize: "clamp(2.4rem, 5.5vw, 4.25rem)",
+                  letterSpacing: "-0.025em",
                 }}
               >
                 Kelola Keuangan,
                 <br />
                 <span
                   style={{
-                    background:
-                      "linear-gradient(90deg, #ffffff 0%, #a6e1fa 100%)",
+                    backgroundImage: `linear-gradient(90deg, #ffffff 0%, #a6e1fa 100%)`,
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -129,118 +155,140 @@ export default function LandingPage() {
                   Lebih Cerdas.
                 </span>
               </h1>
-              <p className="mt-5 max-w-xl text-base text-white/80 sm:text-lg">
-                Confindant bantu kamu lacak setiap pengeluaran, scan struk
-                otomatis, kelola budget per kategori, dan dapatkan insight
-                personal — semua di satu tempat.
+
+              <p className="mt-5 max-w-lg text-base leading-relaxed text-white/70 sm:text-lg">
+                Lacak pengeluaran, scan struk otomatis, kelola budget per
+                kategori, dan dapatkan insight personal — semua di satu
+                tempat.
               </p>
+
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href="/register"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-6 text-base font-semibold text-slate-900 shadow-2xl shadow-black/20 transition-all hover:bg-white/95 hover:shadow-xl active:translate-y-px"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl px-7 text-base font-semibold text-slate-900 transition-all hover:opacity-95 active:translate-y-px"
+                  style={{
+                    backgroundColor: "#ffffff",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+                  }}
                 >
                   Buat Akun Gratis <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/login"
-                  className="inline-flex h-12 items-center gap-2 rounded-xl border border-white/25 bg-white/5 px-6 text-base font-medium text-white backdrop-blur transition-colors hover:bg-white/15"
+                  className="inline-flex h-12 items-center gap-2 rounded-xl border px-7 text-base font-medium text-white transition-colors hover:bg-white/10"
+                  style={{ borderColor: "rgba(255,255,255,0.25)" }}
                 >
-                  Sudah Punya Akun
+                  Masuk Sekarang
                 </Link>
               </div>
-              <div className="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-white/75">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-300" />
-                  Token-based auth
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-300" />
-                  Gemini AI categorization
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-blue-300" />
-                  OCR receipt scanner
-                </div>
+
+              <div className="mt-10 flex flex-wrap gap-x-6 gap-y-2.5 text-sm text-white/60">
+                {["Token-based auth", "Gemini AI categorization", "OCR receipt scanner"].map((t) => (
+                  <span key={t} className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 shrink-0" style={{ color: BLUE500 }} />
+                    {t}
+                  </span>
+                ))}
               </div>
             </div>
 
-            {/* Hero card preview */}
+            {/* Right — dashboard card */}
             <div className="relative">
               <div
-                className="absolute -inset-8 z-0 rounded-4xl blur-3xl"
+                aria-hidden
+                className="absolute inset-0 rounded-3xl blur-3xl"
                 style={{
-                  background:
-                    "radial-gradient(circle at 50% 50%, rgba(255,255,255,0.18), transparent 70%)",
+                  background: `radial-gradient(circle at 50% 50%, rgba(43,135,200,0.25), transparent 70%)`,
+                  transform: "scale(1.15)",
                 }}
               />
               <div
-                className="relative rotate-1 rounded-2xl border border-white/15 bg-white"
+                className="relative rotate-1 overflow-hidden rounded-2xl"
                 style={{
-                  boxShadow:
-                    "0 30px 80px -20px rgba(0,0,0,0.6), 0 8px 30px -10px rgba(0,0,0,0.3)",
+                  backgroundColor: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  boxShadow: "0 30px 80px -15px rgba(0,0,0,0.7)",
+                  backdropFilter: "blur(8px)",
                 }}
               >
+                {/* Card header */}
                 <div
-                  className="rounded-t-2xl p-6 text-white"
-                  style={{ background: CARD_HEAD_GRADIENT }}
+                  className="p-6"
+                  style={{
+                    backgroundImage: `linear-gradient(135deg, ${NAVY} 0%, ${BLUE900} 55%, ${BLUE700} 100%)`,
+                  }}
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/60">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
                       Total Saldo
                     </p>
-                    <span className="rounded-full border border-emerald-300/30 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+                    <span
+                      className="rounded-full px-2.5 py-0.5 text-[10px] font-bold text-emerald-300"
+                      style={{
+                        backgroundColor: "rgba(52,211,153,0.15)",
+                        border: "1px solid rgba(52,211,153,0.25)",
+                      }}
+                    >
                       ↑ 12.4%
                     </span>
                   </div>
                   <p
-                    className="mt-1 font-bold tracking-tight"
+                    className="mt-2 font-bold text-white"
                     style={{
                       fontFamily: "var(--font-display)",
-                      fontSize: "clamp(1.75rem, 4vw, 2.5rem)",
+                      fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)",
+                      letterSpacing: "-0.02em",
                     }}
                   >
                     Rp 24.580.000
                   </p>
                   <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                    <div className="rounded-lg bg-white/10 p-3 backdrop-blur">
-                      <p className="text-white/65">Pemasukan</p>
-                      <p className="mt-0.5 text-base font-semibold text-emerald-300">
-                        + Rp 8.2M
-                      </p>
-                    </div>
-                    <div className="rounded-lg bg-white/10 p-3 backdrop-blur">
-                      <p className="text-white/65">Pengeluaran</p>
-                      <p className="mt-0.5 text-base font-semibold text-amber-300">
-                        − Rp 3.6M
-                      </p>
-                    </div>
+                    {[
+                      { label: "Pemasukan", val: "+ Rp 8.2M", color: "#6ee7b7" },
+                      { label: "Pengeluaran", val: "− Rp 3.6M", color: "#fcd34d" },
+                    ].map((s) => (
+                      <div
+                        key={s.label}
+                        className="rounded-xl p-3"
+                        style={{ backgroundColor: "rgba(255,255,255,0.09)" }}
+                      >
+                        <p className="text-white/55">{s.label}</p>
+                        <p
+                          className="mt-0.5 text-base font-semibold"
+                          style={{ color: s.color }}
+                        >
+                          {s.val}
+                        </p>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <div className="space-y-1 p-3">
+
+                {/* Transaction list */}
+                <div
+                  className="space-y-1 p-3"
+                  style={{ backgroundColor: "rgba(255,255,255,0.97)" }}
+                >
                   {previewTx.map((tx) => (
                     <div
                       key={tx.label}
-                      className="flex items-center gap-3 rounded-lg p-2.5 transition-colors hover:bg-slate-50"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors hover:bg-slate-50"
                     >
                       <div
                         className="grid h-9 w-9 shrink-0 place-items-center rounded-lg"
-                        style={{
-                          background: tx.bg,
-                          color: tx.fg,
-                        }}
+                        style={{ backgroundColor: tx.bg }}
                       >
-                        <tx.icon className="h-4 w-4" />
+                        <tx.icon className="h-4 w-4" style={{ color: tx.fg }} />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-slate-900">
+                        <p className="truncate text-sm font-semibold text-slate-800">
                           {tx.label}
                         </p>
                         <p className="text-xs text-slate-500">{tx.cat}</p>
                       </div>
                       <p
-                        className={`shrink-0 text-sm font-semibold tabular-nums ${
-                          tx.amt > 0 ? "text-emerald-600" : "text-slate-900"
-                        }`}
+                        className="shrink-0 text-sm font-bold tabular-nums"
+                        style={{ color: tx.amt > 0 ? "#059669" : "#1e293b" }}
                       >
                         {tx.amt > 0 ? "+" : ""}
                         {new Intl.NumberFormat("id-ID").format(tx.amt)}
@@ -254,45 +302,60 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Trust strip */}
-      <section className="border-y border-slate-200 bg-white">
-        <div className="mx-auto grid max-w-7xl gap-y-6 px-4 py-10 sm:grid-cols-3 sm:px-6 lg:px-8">
+      {/* ── Stats strip ─────────────────────────────────────────────── */}
+      <section
+        style={{
+          backgroundColor: BLUE900,
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <div className="mx-auto grid max-w-7xl gap-y-8 px-4 py-10 sm:grid-cols-3 sm:px-6 lg:px-8">
           {stats.map((s) => (
             <div key={s.label} className="text-center">
               <p
-                className="font-bold tracking-tight text-slate-900"
+                className="font-bold text-white"
                 style={{
                   fontFamily: "var(--font-display)",
-                  fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+                  fontSize: "clamp(2rem, 3vw, 2.75rem)",
+                  letterSpacing: "-0.02em",
                 }}
               >
                 {s.value}
               </p>
-              <p className="mt-1 text-sm text-slate-600">{s.label}</p>
+              <p className="mt-1 text-sm text-white/60">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Features */}
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
+      {/* ── Features ─────────────────────────────────────────────────── */}
+      <section
+        className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
+      >
         <div className="mx-auto max-w-2xl text-center">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-blue-900">
+          <div
+            className="mb-4 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white"
+            style={{
+              backgroundColor: "rgba(43,135,200,0.18)",
+              border: `1px solid rgba(43,135,200,0.35)`,
+            }}
+          >
             Semua yang kamu butuhkan
           </div>
           <h2
-            className="mt-4 font-bold tracking-tight text-slate-900"
+            className="font-bold tracking-tight text-white"
             style={{
               fontFamily: "var(--font-display)",
               fontSize: "clamp(1.875rem, 3.5vw, 3rem)",
-              letterSpacing: "-0.02em",
+              letterSpacing: "-0.025em",
             }}
           >
             Fitur lengkap untuk personal finance
           </h2>
-          <p className="mt-4 text-base text-slate-600 sm:text-lg">
-            Web companion untuk Confindant mobile — semua fitur, di layar yang
-            lebih luas.
+          <p className="mt-4 text-base text-white/60 sm:text-lg">
+            Web companion untuk Confindant mobile — semua fitur, di layar
+            yang lebih luas.
           </p>
         </div>
 
@@ -300,24 +363,31 @@ export default function LandingPage() {
           {features.map((f) => (
             <div
               key={f.title}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-2xl hover:shadow-blue-900/10"
+              className="group relative overflow-hidden rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.1)",
+              }}
             >
+              {/* Hover glow */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
+                className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100"
                 style={{
-                  background:
-                    "radial-gradient(circle, rgba(14,107,168,0.25), transparent)",
+                  background: `radial-gradient(circle, ${BLUE500}66, transparent)`,
                 }}
               />
               <div
-                className="relative grid h-12 w-12 place-items-center rounded-xl text-white shadow-lg"
-                style={{ background: f.gradient }}
+                className="relative grid h-12 w-12 place-items-center rounded-xl text-white"
+                style={{
+                  backgroundImage: f.gradient,
+                  boxShadow: `0 4px 16px rgba(14,107,168,0.4)`,
+                }}
               >
                 <f.icon className="h-6 w-6" />
               </div>
               <h3
-                className="relative mt-5 font-semibold text-slate-900"
+                className="relative mt-5 font-semibold text-white"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontSize: "1.125rem",
@@ -325,7 +395,7 @@ export default function LandingPage() {
               >
                 {f.title}
               </h3>
-              <p className="relative mt-2 text-sm leading-relaxed text-slate-600">
+              <p className="relative mt-2 text-sm leading-relaxed text-white/60">
                 {f.desc}
               </p>
             </div>
@@ -333,19 +403,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-slate-50 py-20 sm:py-24">
+      {/* ── How it works ─────────────────────────────────────────────── */}
+      <section
+        className="py-20 sm:py-24"
+        style={{ backgroundColor: BLUE900 }}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-wider text-slate-700">
+            <div
+              className="mb-4 inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-white"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
+            >
               Cara kerja
             </div>
             <h2
-              className="mt-4 font-bold tracking-tight text-slate-900"
+              className="font-bold tracking-tight text-white"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(1.875rem, 3.5vw, 2.5rem)",
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.025em",
               }}
             >
               Tiga langkah, semua otomatis
@@ -356,28 +435,33 @@ export default function LandingPage() {
             {steps.map((s, i) => (
               <div
                 key={s.title}
-                className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+                className="relative rounded-2xl p-6"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}
               >
                 <div
-                  className="grid h-11 w-11 place-items-center rounded-xl font-bold text-white shadow-md shadow-blue-900/20"
+                  className="grid h-11 w-11 place-items-center rounded-xl font-bold text-white"
                   style={{
-                    background: BRAND_GRADIENT,
+                    backgroundImage: `linear-gradient(135deg, ${BLUE700}, ${BLUE500})`,
                     fontFamily: "var(--font-display)",
                     fontSize: "1.125rem",
+                    boxShadow: `0 4px 14px rgba(43,135,200,0.35)`,
                   }}
                 >
                   {i + 1}
                 </div>
                 <h3
-                  className="mt-4 font-semibold text-slate-900"
+                  className="mt-4 font-semibold text-white"
                   style={{
                     fontFamily: "var(--font-display)",
-                    fontSize: "1.125rem",
+                    fontSize: "1.0625rem",
                   }}
                 >
                   {s.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                <p className="mt-2 text-sm leading-relaxed text-white/60">
                   {s.desc}
                 </p>
               </div>
@@ -386,46 +470,42 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ─────────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-24 lg:px-8">
         <div
-          className="relative overflow-hidden rounded-4xl px-6 py-16 text-center text-white sm:px-12 sm:py-20"
-          style={{ background: HERO_GRADIENT }}
+          className="relative overflow-hidden rounded-3xl px-6 py-16 text-center text-white sm:px-12 sm:py-20"
+          style={{
+            backgroundImage: `linear-gradient(135deg, ${NAVY} 0%, ${BLUE900} 55%, ${BLUE600} 100%)`,
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: `0 20px 80px rgba(10,36,114,0.5)`,
+          }}
         >
           <div
             aria-hidden
-            className="pointer-events-none absolute -right-32 -top-32 h-72 w-72 rounded-full blur-3xl"
+            className="pointer-events-none absolute right-0 top-0 h-72 w-72 -translate-y-1/3 translate-x-1/3 rounded-full blur-3xl"
             style={{
-              background:
-                "radial-gradient(circle, rgba(43,135,200,0.55), transparent 70%)",
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -bottom-32 -left-32 h-72 w-72 rounded-full blur-3xl"
-            style={{
-              background:
-                "radial-gradient(circle, rgba(14,107,168,0.4), transparent 70%)",
+              background: `radial-gradient(circle, rgba(43,135,200,0.5), transparent 70%)`,
             }}
           />
           <div className="relative">
             <h2
-              className="font-bold tracking-tight"
+              className="font-bold tracking-tight text-white"
               style={{
                 fontFamily: "var(--font-display)",
                 fontSize: "clamp(1.875rem, 4vw, 3rem)",
-                letterSpacing: "-0.02em",
+                letterSpacing: "-0.025em",
               }}
             >
               Siap kelola uang lebih baik?
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-base text-white/80">
+            <p className="mx-auto mt-4 max-w-md text-base text-white/70">
               Gratis, tidak ada kartu kredit. Mulai sekarang dalam 30 detik.
             </p>
             <div className="mt-8 flex justify-center">
               <Link
                 href="/register"
-                className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-7 text-base font-semibold text-slate-900 shadow-2xl shadow-black/30 transition-all hover:bg-white/95 active:translate-y-px"
+                className="inline-flex h-12 items-center gap-2 rounded-xl bg-white px-7 text-base font-bold text-slate-900 transition-all hover:bg-white/95 active:translate-y-px"
+                style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.3)" }}
               >
                 Buat Akun Sekarang <ArrowRight className="h-4 w-4" />
               </Link>
@@ -434,18 +514,24 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
+      {/* ── Footer ──────────────────────────────────────────────────── */}
+      <footer
+        style={{
+          backgroundColor: NAVY,
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-8 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 text-white/60">
             <div
               className="grid h-7 w-7 place-items-center rounded-lg"
-              style={{ background: BRAND_GRADIENT }}
+              style={{ backgroundImage: `linear-gradient(135deg, ${BLUE900}, ${BLUE600})` }}
             >
               <Wallet className="h-3.5 w-3.5 text-white" />
             </div>
             <p>© {new Date().getFullYear()} Confindant. All rights reserved.</p>
           </div>
-          <p className="text-xs">
+          <p className="text-xs text-white/40">
             Backend Laravel · Frontend Next.js · Mobile Flutter
           </p>
         </div>
@@ -454,6 +540,7 @@ export default function LandingPage() {
   );
 }
 
+/* ─── Data ─────────────────────────────────────────────────────────── */
 const previewTx = [
   {
     label: "Starbucks Coffee",
@@ -492,44 +579,44 @@ const features = [
     icon: Wallet,
     title: "Multi-wallet",
     desc: "Kelola banyak dompet, transfer antar wallet, dan pantau saldo real-time di satu tempat.",
-    gradient: "linear-gradient(135deg, #0a2472 0%, #0e6ba8 100%)",
+    gradient: `linear-gradient(135deg, #0a2472, #0e6ba8)`,
   },
   {
     icon: Camera,
     title: "Scan Struk OCR",
     desc: "Foto struk → otomatis dibaca AI dan jadi transaksi tervalidasi tanpa input manual.",
-    gradient: "linear-gradient(135deg, #0e6ba8 0%, #2b87c8 100%)",
+    gradient: `linear-gradient(135deg, #0e6ba8, #2b87c8)`,
   },
   {
     icon: BarChart3,
     title: "Analytics Pintar",
     desc: "Insight pengeluaran berdasarkan kategori, tag, dan periode dengan chart interaktif.",
-    gradient: "linear-gradient(135deg, #114b9c 0%, #0e6ba8 100%)",
+    gradient: `linear-gradient(135deg, #114b9c, #0e6ba8)`,
   },
   {
     icon: PiggyBank,
     title: "Goals & Budget",
     desc: "Target tabungan dengan auto-topup dan budget per kategori dengan alert threshold.",
-    gradient: "linear-gradient(135deg, #0a2472 0%, #114b9c 100%)",
+    gradient: `linear-gradient(135deg, #0a2472, #114b9c)`,
   },
   {
     icon: Sparkles,
     title: "AI Finance Chat",
     desc: "Tanya keuangan kamu dalam bahasa natural, jawaban langsung dari data transaksimu.",
-    gradient: "linear-gradient(135deg, #0e6ba8 0%, #2b87c8 100%)",
+    gradient: `linear-gradient(135deg, #0e6ba8, #2b87c8)`,
   },
   {
     icon: ShieldCheck,
     title: "Aman & Privat",
-    desc: "Token-based auth, terenkripsi end-to-end, dan tidak ada data yang dijual ke pihak ketiga.",
-    gradient: "linear-gradient(135deg, #000314 0%, #0a2472 100%)",
+    desc: "Token-based auth, terenkripsi end-to-end, data tidak dijual ke pihak ketiga.",
+    gradient: `linear-gradient(135deg, #000314, #0a2472)`,
   },
 ];
 
 const steps = [
   {
     title: "Hubungkan & atur dompet",
-    desc: "Tambah wallet kamu — cash, bank, e-wallet — dan set saldo awal dalam beberapa detik.",
+    desc: "Tambah wallet — cash, bank, e-wallet — dan set saldo awal dalam beberapa detik.",
   },
   {
     title: "Catat atau scan struk",
