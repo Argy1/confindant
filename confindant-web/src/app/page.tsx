@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Sparkles,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
