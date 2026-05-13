@@ -29,6 +29,7 @@ type OcrJob = {
     total_amount?: number | string;
     date?: string;
     category?: string;
+    type?: string;
     items?: unknown[];
   } | null;
 };
@@ -80,12 +81,18 @@ export default function ScanPage() {
   }, [job?.id, job?.status]);
 
   const commit = useMutation({
-    mutationFn: () =>
-      transactionsApi.scanOcrCommit(job!.id, {
+    mutationFn: () => {
+      const extracted = job!.extracted ?? {};
+      return transactionsApi.scanOcrCommit(job!.id, {
         wallet_id: selectedWalletId,
-        category: category || null,
+        type: (extracted.type as "income" | "expense") || "expense",
+        total_amount: Number(extracted.total_amount) || 0,
+        date: extracted.date || new Date().toISOString().slice(0, 10),
+        merchant_name: extracted.merchant_name || null,
+        category: category || extracted.category || null,
         notes: notes || null,
-      }),
+      });
+    },
     onSuccess: () => {
       toast.success("Transaksi berhasil dibuat dari struk");
       qc.invalidateQueries({ queryKey: ["transactions"] });
