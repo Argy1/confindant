@@ -23,9 +23,8 @@ import { formatCurrency } from "@/lib/utils";
 
 type OcrJob = {
   id: string;
-  status: "pending" | "processing" | "completed" | "failed" | string;
-  data?: Record<string, unknown> | null;
-  parsed?: {
+  status: "pending" | "processing" | "success" | "failed" | string;
+  extracted?: {
     merchant_name?: string;
     total_amount?: number | string;
     date?: string;
@@ -62,13 +61,13 @@ export default function ScanPage() {
   // Polling
   React.useEffect(() => {
     if (!job?.id) return;
-    if (job.status === "completed" || job.status === "failed") return;
+    if (job.status === "success" || job.status === "failed") return;
     const interval = setInterval(async () => {
       try {
         const updated = await transactionsApi.scanOcrPoll(job.id);
         setJob(updated as unknown as OcrJob);
         if (
-          (updated as { status?: string }).status === "completed" ||
+          (updated as { status?: string }).status === "success" ||
           (updated as { status?: string }).status === "failed"
         ) {
           clearInterval(interval);
@@ -113,7 +112,7 @@ export default function ScanPage() {
     setCategory("");
   };
 
-  const parsed = (job as OcrJob | null)?.parsed ?? null;
+  const parsed = (job as OcrJob | null)?.extracted ?? null;
 
   return (
     <div className="space-y-6">
@@ -187,7 +186,7 @@ export default function ScanPage() {
                   <span className="font-medium">Status</span>
                   <Badge
                     variant={
-                      job.status === "completed"
+                      job.status === "success"
                         ? "success"
                         : job.status === "failed"
                         ? "destructive"
@@ -198,12 +197,12 @@ export default function ScanPage() {
                       ? "Antrian"
                       : job.status === "processing"
                       ? "Memproses"
-                      : job.status === "completed"
+                      : job.status === "success"
                       ? "Selesai"
                       : "Gagal"}
                   </Badge>
                 </div>
-                {(job.status === "pending" || job.status === "processing") && (
+                {job.status !== "success" && job.status !== "failed" && (
                   <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
                     <Loader2 className="h-3 w-3 animate-spin" />
                     AI sedang membaca struk…
@@ -280,7 +279,7 @@ export default function ScanPage() {
                     className="w-full"
                     onClick={() => commit.mutate()}
                     disabled={
-                      job?.status !== "completed" ||
+                      job?.status !== "success" ||
                       !selectedWalletId ||
                       commit.isPending
                     }
