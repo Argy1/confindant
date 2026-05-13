@@ -22,11 +22,16 @@ export const metadata: Metadata = {
     "Confindant",
     "OCR receipt",
   ],
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "Confindant",
     description:
       "Smart personal finance — wallets, budgets, AI insights, receipt OCR.",
     type: "website",
+    images: [{ url: "/logo.png" }],
   },
 };
 

@@ -3,6 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
@@ -14,7 +15,6 @@ import {
   ShoppingBag,
   Sparkles,
   TrendingUp,
-  Wallet,
 } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 
@@ -48,15 +48,15 @@ export default function LandingPage() {
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
-            <div
-              className="grid h-9 w-9 place-items-center rounded-xl"
-              style={{
-                backgroundImage: `linear-gradient(135deg, ${BLUE900}, ${BLUE600})`,
-                boxShadow: `0 4px 14px rgba(14,107,168,0.45)`,
-              }}
-            >
-              <Wallet className="h-5 w-5 text-white" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Confindant"
+              width={36}
+              height={36}
+              className="rounded-xl"
+              style={{ boxShadow: `0 4px 14px rgba(14,107,168,0.45)` }}
+              priority
+            />
             <span
               className="text-xl font-bold tracking-tight text-white"
               style={{ fontFamily: "var(--font-display)" }}

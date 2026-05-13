@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -14,7 +15,6 @@ import {
   MessageSquareText,
   User as UserIcon,
   X,
-  Wallet,
   Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,9 +43,14 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-2 px-5 pb-4 pt-5">
-        <div className="grid h-9 w-9 place-items-center rounded-xl gradient-hero">
-          <Wallet className="h-5 w-5 text-white" />
-        </div>
+        <Image
+          src="/logo.png"
+          alt="Confindant"
+          width={36}
+          height={36}
+          className="rounded-xl"
+          priority
+        />
         <span className="font-display text-lg font-bold tracking-tight">
           Confindant
         </span>

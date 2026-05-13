@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Wallet } from "lucide-react";
+import Image from "next/image";
 import { GuestGuard } from "@/components/auth-guard";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
@@ -21,9 +21,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             href="/"
             className="relative z-10 flex items-center gap-2 text-white"
           >
-            <div className="grid h-9 w-9 place-items-center rounded-xl bg-white/15 backdrop-blur">
-              <Wallet className="h-5 w-5" />
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Confindant"
+              width={36}
+              height={36}
+              className="rounded-xl"
+            />
             <span className="font-display text-xl font-bold">Confindant</span>
           </Link>
 
@@ -59,9 +63,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               href="/"
               className="mb-6 flex items-center gap-2 lg:hidden"
             >
-              <div className="grid h-9 w-9 place-items-center rounded-xl gradient-hero">
-                <Wallet className="h-5 w-5 text-white" />
-              </div>
+              <Image
+                src="/logo.png"
+                alt="Confindant"
+                width={36}
+                height={36}
+                className="rounded-xl"
+              />
               <span className="font-display text-xl font-bold">Confindant</span>
             </Link>
             {children}
