@@ -198,31 +198,35 @@ export type DashboardData = {
 };
 
 export type AnalyticsData = {
-  period: "weekly" | "monthly";
-  from_date: string;
-  to_date: string;
-  window_days: number;
   income: number;
   expense: number;
   net_cashflow: number;
   income_vs_previous?: { amount: number; percent_change: number };
   expense_vs_previous?: { amount: number; percent_change: number };
-  by_category: { category: string; amount: number; percent: number; trend?: string }[];
-  by_source?: { source: string; amount: number; percent: number }[];
-  by_tag?: { tag: string; count: number; total: number }[];
-  daily_breakdown?: {
-    date: string;
-    income: number;
-    expense: number;
-    net: number;
-  }[];
-  budget_performance?: {
+  by_category: { category: string; amount: number; percent: number }[];
+  daily_breakdown: { date: string; income: number; expense: number; net: number }[];
+  budget_performance: {
     category: string;
     budget: number;
     spent: number;
     remaining: number;
     status: "on_track" | "warning" | "exceeded";
   }[];
+  insight_text?: string;
+  anomaly?: { category: string; spike_percent: number; message: string };
+};
+
+export type AnalyticsRaw = {
+  summary: { total_income: number; total_expense: number; net_saving: number };
+  category_breakdown: { label: string; amount: number }[];
+  income_breakdown: { label: string; amount: number }[];
+  net_flow_trend: { label: string; income: number; expense: number; amount: number }[];
+  trend_points: { label: string; amount: number }[];
+  income_trend_points: { label: string; amount: number }[];
+  budget_progress: { category: string; used: number; limit: number }[];
+  comparison: { mode: string; current_value: number; previous_value: number; delta_percent: number };
+  anomaly: { category: string; spike_percent: number; message: string };
+  insight_text: string;
 };
 
 export type ProfileData = {

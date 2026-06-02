@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Tren Harian</CardTitle>
+            <CardTitle>Tren {period === "weekly" ? "Mingguan" : "Bulanan"}</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -197,7 +197,7 @@ export default function AnalyticsPage() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                <div className="col-span-2 space-y-2 overflow-y-auto pr-1">
+                <div className="col-span-2 flex flex-col justify-center space-y-2 overflow-y-auto pr-1">
                   {data!.by_category.slice(0, 8).map((c, i) => (
                     <div key={c.category} className="flex items-center gap-2 text-xs">
                       <span
@@ -205,7 +205,7 @@ export default function AnalyticsPage() {
                         style={{ background: PALETTE[i % PALETTE.length] }}
                       />
                       <span className="min-w-0 flex-1 truncate">{c.category}</span>
-                      <span className="font-medium">{Math.round(c.percent)}%</span>
+                      <span className="font-medium">{c.percent.toFixed(1)}%</span>
                     </div>
                   ))}
                 </div>
@@ -221,7 +221,7 @@ export default function AnalyticsPage() {
           <CardHeader>
             <CardTitle>Performa Budget</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {data.budget_performance.map((b) => {
               const pct = b.budget > 0 ? Math.min(100, (b.spent / b.budget) * 100) : 0;
               return (
@@ -239,16 +239,39 @@ export default function AnalyticsPage() {
                         width: `${pct}%`,
                         background:
                           b.status === "exceeded"
-                            ? "var(--danger)"
+                            ? "#dc2626"
                             : b.status === "warning"
-                            ? "var(--warning)"
-                            : "var(--blue-600)",
+                            ? "#f59e0b"
+                            : "#0e6ba8",
                       }}
                     />
                   </div>
+                  {b.status !== "on_track" && (
+                    <p className={`mt-1 text-xs ${b.status === "exceeded" ? "text-rose-600" : "text-amber-600"}`}>
+                      {b.status === "exceeded" ? "Melebihi budget" : "Mendekati batas budget"}
+                    </p>
+                  )}
                 </div>
               );
             })}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Insight & Anomaly */}
+      {!isLoading && data?.insight_text && (
+        <Card>
+          <CardContent className="flex items-start gap-3 p-5">
+            <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-blue-100 text-blue-700">
+              <TrendingUp className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">Insight Keuangan</p>
+              <p className="text-sm text-muted-foreground">{data.insight_text}</p>
+              {data.anomaly && data.anomaly.category !== "None" && (
+                <p className="mt-1 text-xs text-amber-600">{data.anomaly.message}</p>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
