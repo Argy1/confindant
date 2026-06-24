@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class Habit extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'habits';
-
     protected $fillable = [
         'user_id',
         'title',

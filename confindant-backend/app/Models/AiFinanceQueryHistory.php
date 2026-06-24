@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class AiFinanceQueryHistory extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'ai_finance_query_history';
-
     protected $fillable = [
         'user_id',
         'query',
@@ -29,4 +26,3 @@ class AiFinanceQueryHistory extends Model
         'fallback' => 'boolean',
     ];
 }
-

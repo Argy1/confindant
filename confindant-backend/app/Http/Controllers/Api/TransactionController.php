@@ -37,7 +37,7 @@ class TransactionController extends Controller
         $perPage = max(1, min((int) $request->query('per_page', 20), 100));
         $page = max(1, (int) $request->query('page', 1));
 
-        $query = Transaction::where('user_id', (string) $request->user()->_id)
+        $query = Transaction::where('user_id', (string) $request->user()->id)
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc');
 
@@ -127,7 +127,7 @@ class TransactionController extends Controller
             'transfer_group_id' => 'nullable|string|max:128',
         ]);
 
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
         $wallet = $this->findOwnedWallet($userId, (string) $validated['wallet_id']);
         if (!$wallet) {
             return $this->fail('Wallet tidak ditemukan', [], 404);
@@ -168,8 +168,8 @@ class TransactionController extends Controller
 
     public function show(Request $request, string $id)
     {
-        $transaction = Transaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $transaction = Transaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$transaction) {
@@ -181,8 +181,8 @@ class TransactionController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $transaction = Transaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $transaction = Transaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$transaction) {
@@ -210,7 +210,7 @@ class TransactionController extends Controller
             'transfer_group_id' => 'nullable|string|max:128',
         ]);
 
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
         $oldWallet = $this->findOwnedWallet($userId, (string) $transaction->wallet_id);
         if (!$oldWallet) {
             return $this->fail('Wallet transaksi tidak ditemukan', [], 404);
@@ -229,7 +229,7 @@ class TransactionController extends Controller
         $oldSigned = $this->signedAmount($oldType, $oldAmount);
         $newSigned = $this->signedAmount($newType, $newAmount);
 
-        if ((string) $oldWallet->_id === (string) $newWallet->_id) {
+        if ((string) $oldWallet->id === (string) $newWallet->id) {
             $finalBalance = (float) $oldWallet->balance - $oldSigned + $newSigned;
             if ($finalBalance < 0) {
                 return $this->fail('Saldo wallet tidak mencukupi untuk perubahan transaksi ini', [], 422);
@@ -270,15 +270,15 @@ class TransactionController extends Controller
 
     public function destroy(Request $request, string $id)
     {
-        $transaction = Transaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $transaction = Transaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$transaction) {
             return $this->fail('Transaksi tidak ditemukan', [], 404);
         }
 
-        $wallet = $this->findOwnedWallet((string) $request->user()->_id, (string) $transaction->wallet_id);
+        $wallet = $this->findOwnedWallet((string) $request->user()->id, (string) $transaction->wallet_id);
         if (!$wallet) {
             return $this->fail('Wallet transaksi tidak ditemukan', [], 404);
         }
@@ -291,7 +291,7 @@ class TransactionController extends Controller
 
         $wallet->update(['balance' => $newBalance]);
         $this->triggerBudgetAlert(
-            (string) $request->user()->_id,
+            (string) $request->user()->id,
             $transaction->category,
             $transaction->type,
             (bool) $transaction->is_internal_transfer
@@ -324,7 +324,7 @@ class TransactionController extends Controller
             'transfer_group_id' => 'nullable|string|max:128',
         ]);
 
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
         $wallet = $this->findOwnedWallet($userId, (string) $validated['wallet_id']);
         if (!$wallet) {
             return $this->fail('Wallet tidak ditemukan', [], 404);
@@ -380,7 +380,7 @@ class TransactionController extends Controller
         $receiptImageUrl = Storage::disk('public')->url($path);
 
         $ocrJob = ReceiptOcrJob::create([
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
             'status' => 'pending',
             'confidence' => 0,
             'error_code' => null,
@@ -395,17 +395,17 @@ class TransactionController extends Controller
 
         $dispatchMode = 'queue';
         try {
-            ProcessReceiptOcrJob::dispatch((string) $ocrJob->_id);
+            ProcessReceiptOcrJob::dispatch((string) $ocrJob->id);
         } catch (\Throwable $dispatchError) {
             Log::warning('ocr_job_queue_dispatch_failed_fallback_sync', [
-                'job_id' => (string) $ocrJob->_id,
-                'user_id' => (string) $request->user()->_id,
+                'job_id' => (string) $ocrJob->id,
+                'user_id' => (string) $request->user()->id,
                 'error' => $dispatchError->getMessage(),
             ]);
 
             $dispatchMode = 'sync_fallback';
             try {
-                ProcessReceiptOcrJob::dispatchSync((string) $ocrJob->_id);
+                ProcessReceiptOcrJob::dispatchSync((string) $ocrJob->id);
             } catch (\Throwable $syncError) {
                 $ocrJob->update([
                     'status' => 'failed',
@@ -422,8 +422,8 @@ class TransactionController extends Controller
         }
 
         Log::info('ocr_job_queued', [
-            'job_id' => (string) $ocrJob->_id,
-            'user_id' => (string) $request->user()->_id,
+            'job_id' => (string) $ocrJob->id,
+            'user_id' => (string) $request->user()->id,
             'status' => 'pending',
             'dispatch_mode' => $dispatchMode,
         ]);
@@ -440,8 +440,8 @@ class TransactionController extends Controller
 
     public function getOcr(Request $request, string $id)
     {
-        $ocrJob = ReceiptOcrJob::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $ocrJob = ReceiptOcrJob::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$ocrJob) {
@@ -453,8 +453,8 @@ class TransactionController extends Controller
 
     public function commitOcr(Request $request, string $id)
     {
-        $ocrJob = ReceiptOcrJob::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $ocrJob = ReceiptOcrJob::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$ocrJob) {
@@ -503,7 +503,7 @@ class TransactionController extends Controller
             'transactions.*.transfer_group_id' => 'nullable|string|max:128',
         ]);
 
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
 
         if (!empty($validated['transactions']) && is_array($validated['transactions'])) {
             $createdTransactions = [];
@@ -560,8 +560,8 @@ class TransactionController extends Controller
 
     public function submitOcrFeedback(Request $request, string $id)
     {
-        $ocrJob = ReceiptOcrJob::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $ocrJob = ReceiptOcrJob::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$ocrJob) {
@@ -581,8 +581,8 @@ class TransactionController extends Controller
         ]);
 
         $feedback = ReceiptOcrFeedback::create([
-            'user_id' => (string) $request->user()->_id,
-            'ocr_job_id' => (string) $ocrJob->_id,
+            'user_id' => (string) $request->user()->id,
+            'ocr_job_id' => (string) $ocrJob->id,
             'transaction_id' => $validated['transaction_id'] ?? null,
             'accepted' => (bool) $validated['accepted'],
             'source_mode' => (string) $validated['source_mode'],
@@ -598,7 +598,7 @@ class TransactionController extends Controller
 
     private function findOwnedWallet(string $userId, string $walletId): ?Wallet
     {
-        return Wallet::where('_id', $walletId)
+        return Wallet::where('id', $walletId)
             ->where('user_id', $userId)
             ->first();
     }

@@ -16,9 +16,9 @@ class NotificationController extends Controller
         $perPage = max(1, min((int) $request->query('per_page', 20), 100));
         $page = max(1, (int) $request->query('page', 1));
 
-        $query = UserNotification::where('user_id', (string) $request->user()->_id)
+        $query = UserNotification::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
-            ->orderBy('_id', 'desc');
+            ->orderBy('id', 'desc');
 
         $total = $query->count();
         $notifications = $query
@@ -47,7 +47,7 @@ class NotificationController extends Controller
             ...$validated,
             'time_label' => $validated['time_label'] ?? 'just now',
             'read' => $validated['read'] ?? false,
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
         ]);
 
         return $this->ok($notification, 'Notifikasi berhasil dibuat', [], 201);
@@ -55,8 +55,8 @@ class NotificationController extends Controller
 
     public function markRead(Request $request, string $id)
     {
-        $notification = UserNotification::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $notification = UserNotification::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$notification) {

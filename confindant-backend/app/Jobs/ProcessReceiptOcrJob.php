@@ -43,7 +43,7 @@ class ProcessReceiptOcrJob implements ShouldQueue
         ]);
 
         Log::info('ocr_job_processing', [
-            'job_id' => (string) $job->_id,
+            'job_id' => (string) $job->id,
             'user_id' => (string) $job->user_id,
             'attempt' => $this->attempts(),
             'status' => 'processing',
@@ -68,7 +68,7 @@ class ProcessReceiptOcrJob implements ShouldQueue
             ]);
 
             Log::info('ocr_job_success', [
-                'job_id' => (string) $job->_id,
+                'job_id' => (string) $job->id,
                 'user_id' => (string) $job->user_id,
                 'status' => 'success',
                 'confidence' => $confidence,
@@ -89,7 +89,7 @@ class ProcessReceiptOcrJob implements ShouldQueue
             ]);
 
             Log::warning('ocr_job_retrying', [
-                'job_id' => (string) $job->_id,
+                'job_id' => (string) $job->id,
                 'user_id' => (string) $job->user_id,
                 'attempt' => $this->attempts(),
                 'max_attempts' => $this->tries,
@@ -127,7 +127,7 @@ class ProcessReceiptOcrJob implements ShouldQueue
         ]);
 
         Log::error('ocr_job_failed', [
-            'job_id' => (string) $job->_id,
+            'job_id' => (string) $job->id,
             'user_id' => (string) $job->user_id,
             'status' => 'failed',
             'attempt' => $this->attempts(),

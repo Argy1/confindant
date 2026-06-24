@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class AiFeedback extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'ai_feedback';
-
     protected $fillable = [
         'user_id',
         'transaction_id',

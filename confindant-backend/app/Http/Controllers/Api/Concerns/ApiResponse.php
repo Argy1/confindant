@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Concerns;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Collection;
-use MongoDB\BSON\ObjectId;
 
 trait ApiResponse
 {
@@ -43,19 +42,10 @@ trait ApiResponse
             return $value->toIso8601String();
         }
 
-        if ($value instanceof ObjectId) {
-            return (string) $value;
-        }
-
         if (is_array($value)) {
             $result = [];
             foreach ($value as $key => $item) {
                 $result[$key] = $this->transform($item);
-            }
-
-            if (array_key_exists('_id', $result)) {
-                $result['id'] = (string) $result['_id'];
-                $result['_id'] = (string) $result['_id'];
             }
 
             return $result;

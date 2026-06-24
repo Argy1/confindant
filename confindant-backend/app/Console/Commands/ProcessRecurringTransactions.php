@@ -34,7 +34,7 @@ class ProcessRecurringTransactions extends Command
             ->get();
 
         foreach ($dueItems as $item) {
-            $wallet = Wallet::where('_id', (string) $item->wallet_id)
+            $wallet = Wallet::where('id', (string) $item->wallet_id)
                 ->where('user_id', (string) $item->user_id)
                 ->first();
 
@@ -57,8 +57,8 @@ class ProcessRecurringTransactions extends Command
                 ]);
 
                 Log::warning('recurring_insufficient_balance', [
-                    'recurring_id' => (string) $item->_id,
-                    'wallet_id' => (string) $wallet->_id,
+                    'recurring_id' => (string) $item->id,
+                    'wallet_id' => (string) $wallet->id,
                     'user_id' => (string) $item->user_id,
                     'amount' => $amount,
                     'balance' => (float) $wallet->balance,
@@ -108,7 +108,7 @@ class ProcessRecurringTransactions extends Command
             ]);
 
             Log::info('recurring_processed', [
-                'recurring_id' => (string) $item->_id,
+                'recurring_id' => (string) $item->id,
                 'user_id' => (string) $item->user_id,
                 'wallet_id' => (string) $item->wallet_id,
                 'next_run_at' => $nextRun->toIso8601String(),
@@ -140,7 +140,7 @@ class ProcessRecurringTransactions extends Command
         ]);
 
         Log::error('recurring_failed', [
-            'recurring_id' => (string) $item->_id,
+            'recurring_id' => (string) $item->id,
             'user_id' => (string) $item->user_id,
             'error_code' => $code,
             'message' => $message,

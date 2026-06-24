@@ -63,7 +63,7 @@ class BudgetAlertService
 
                 $eventKey = sprintf(
                     'budget:%s:%s:%s',
-                    (string) $budget->_id,
+                    (string) $budget->id,
                     (string) $budget->period_month,
                     rtrim(rtrim(number_format($threshold, 2, '.', ''), '0'), '.')
                 );

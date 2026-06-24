@@ -17,7 +17,7 @@ class AiFinanceInsightService
 
         $walletQuery = Wallet::where('user_id', $userId);
         if ($walletId) {
-            $walletQuery->where('_id', $walletId);
+            $walletQuery->where('id', $walletId);
         }
         $currentBalance = (float) $walletQuery->get()->sum('balance');
 

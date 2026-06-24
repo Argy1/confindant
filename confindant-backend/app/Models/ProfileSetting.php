@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class ProfileSetting extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'profile_settings';
-
     protected $fillable = [
         'user_id',
         'full_name',

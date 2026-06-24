@@ -2,26 +2,21 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model; 
+use Illuminate\Database\Eloquent\Model;
 
 class Mahasiswa extends Model
 {
-    protected $connection = 'mongodb';
-    protected $table = 'mahasiswa'; 
-    protected $collection = 'mahasiswa'; 
-    
-    protected $primaryKey = '_id';
+    protected $table = 'mahasiswa';
 
     protected $fillable = [
         'nim',
         'nama',
         'jenis_kelamin',
         'prodi',
-        'usia'
+        'usia',
     ];
 
-    // HAPUS 'prodi' => 'array'
     protected $casts = [
-        'usia' => 'integer', 
+        'usia' => 'integer',
     ];
 }

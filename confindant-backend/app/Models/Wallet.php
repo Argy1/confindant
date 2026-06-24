@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class Wallet extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'wallets';
-
     protected $fillable = [
         'user_id',
         'wallet_name',

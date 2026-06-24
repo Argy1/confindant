@@ -25,7 +25,7 @@ class AnalyticsController extends Controller
         ]);
 
         $period = $validated['period'] ?? 'monthly';
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
         $fromDate = isset($validated['from_date']) ? Carbon::parse($validated['from_date'])->startOfDay() : null;
         $toDate = isset($validated['to_date']) ? Carbon::parse($validated['to_date'])->endOfDay() : null;
         $walletId = $validated['wallet_id'] ?? null;

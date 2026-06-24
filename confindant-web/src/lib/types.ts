@@ -15,7 +15,6 @@ export type Paginated<T> = {
 
 export type User = {
   id: string;
-  _id?: string;
   username: string;
   email: string;
   created_at?: string;
@@ -30,7 +29,6 @@ export type LoginResponse = {
 
 export type Wallet = {
   id: string;
-  _id?: string;
   user_id: string;
   wallet_name: string;
   balance: number;
@@ -58,7 +56,6 @@ export type OcrStatus =
 
 export type Transaction = {
   id: string;
-  _id?: string;
   user_id: string;
   wallet_id: string;
   type: TxType;
@@ -90,7 +87,6 @@ export type Transaction = {
 
 export type Budget = {
   id: string;
-  _id?: string;
   user_id: string;
   category: string;
   limit_amount: number;
@@ -108,7 +104,6 @@ export type GoalContribution = {
 
 export type Goal = {
   id: string;
-  _id?: string;
   user_id: string;
   name: string;
   target_amount: number;
@@ -124,7 +119,6 @@ export type Goal = {
 
 export type Habit = {
   id: string;
-  _id?: string;
   user_id: string;
   title: string;
   description: string;
@@ -138,7 +132,6 @@ export type Habit = {
 
 export type RecurringTransaction = {
   id: string;
-  _id?: string;
   user_id: string;
   wallet_id: string;
   type: TxType;
@@ -232,8 +225,7 @@ export type AnalyticsRaw = {
 export type ProfileData = {
   profile: {
     id: string;
-    _id?: string;
-    user_id: string;
+      user_id: string;
     full_name: string;
     username: string;
     email: string;
@@ -262,7 +254,6 @@ export type ProfileData = {
 
 export type NotificationItem = {
   id: string;
-  _id?: string;
   user_id: string;
   title: string;
   subtitle: string;

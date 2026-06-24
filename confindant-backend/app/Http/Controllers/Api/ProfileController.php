@@ -20,7 +20,7 @@ class ProfileController extends Controller
 
         return $this->ok([
             'profile' => $profile,
-            'notifications' => UserNotification::where('user_id', (string) $request->user()->_id)
+            'notifications' => UserNotification::where('user_id', (string) $request->user()->id)
                 ->orderBy('created_at', 'desc')
                 ->limit(10)
                 ->get(),
@@ -112,7 +112,7 @@ class ProfileController extends Controller
     private function resolveProfile(Request $request): ProfileSetting
     {
         return ProfileSetting::firstOrCreate(
-            ['user_id' => (string) $request->user()->_id],
+            ['user_id' => (string) $request->user()->id],
             [
                 'full_name' => $request->user()->username,
                 'username' => $request->user()->username,

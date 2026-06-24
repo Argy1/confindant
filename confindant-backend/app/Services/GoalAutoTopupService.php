@@ -56,7 +56,7 @@ class GoalAutoTopupService
                 'note' => 'Auto top-up from income transaction',
                 'meta' => [
                     'mode' => 'auto_topup',
-                    'transaction_id' => (string) $transaction->_id,
+                    'transaction_id' => (string) $transaction->id,
                     'source' => $transaction->source ? (string) $transaction->source : null,
                 ],
             ]);
@@ -67,7 +67,7 @@ class GoalAutoTopupService
             ]);
 
             $applied[] = [
-                'goal_id' => (string) $goal->_id,
+                'goal_id' => (string) $goal->id,
                 'goal_name' => (string) ($goal->name ?? 'Goal'),
                 'amount' => $appliedAmount,
                 'percent' => $percent,

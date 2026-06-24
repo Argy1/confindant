@@ -30,7 +30,7 @@ class UserController extends Controller
         ]);
 
         ProfileSetting::firstOrCreate(
-            ['user_id' => (string) $user->_id],
+            ['user_id' => (string) $user->id],
             [
                 'full_name' => $user->username,
                 'username' => $user->username,
@@ -63,7 +63,7 @@ class UserController extends Controller
 
         Goal::firstOrCreate(
             [
-                'user_id' => (string) $user->_id,
+                'user_id' => (string) $user->id,
                 'name' => 'Emergency Fund',
             ],
             [
@@ -79,7 +79,7 @@ class UserController extends Controller
 
         Habit::firstOrCreate(
             [
-                'user_id' => (string) $user->_id,
+                'user_id' => (string) $user->id,
                 'title' => 'Daily Expense Log',
             ],
             [

@@ -13,7 +13,7 @@ class BudgetController extends Controller
 
     public function index(Request $request)
     {
-        $budgets = Budget::where('user_id', (string) $request->user()->_id)
+        $budgets = Budget::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -32,7 +32,7 @@ class BudgetController extends Controller
         $budget = Budget::create([
             ...$validated,
             'alert_threshold' => $validated['alert_threshold'] ?? 80,
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
         ]);
 
         return $this->ok($budget, 'Budget berhasil dibuat', [], 201);
@@ -40,8 +40,8 @@ class BudgetController extends Controller
 
     public function show(Request $request, string $id)
     {
-        $budget = Budget::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $budget = Budget::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$budget) {
@@ -53,8 +53,8 @@ class BudgetController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $budget = Budget::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $budget = Budget::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$budget) {
@@ -75,8 +75,8 @@ class BudgetController extends Controller
 
     public function destroy(Request $request, string $id)
     {
-        $budget = Budget::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $budget = Budget::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$budget) {

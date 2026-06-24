@@ -13,7 +13,7 @@ class HabitController extends Controller
 
     public function index(Request $request)
     {
-        $habits = Habit::where('user_id', (string) $request->user()->_id)
+        $habits = Habit::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -44,7 +44,7 @@ class HabitController extends Controller
             ...$validated,
             'current_count' => 0,
             'active' => $validated['active'] ?? true,
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
         ]);
 
         return $this->ok($habit, 'Habit berhasil dibuat', [], 201);
@@ -52,8 +52,8 @@ class HabitController extends Controller
 
     public function increment(Request $request, string $id)
     {
-        $habit = Habit::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $habit = Habit::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$habit) {
@@ -67,8 +67,8 @@ class HabitController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $habit = Habit::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $habit = Habit::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$habit) {
@@ -90,8 +90,8 @@ class HabitController extends Controller
 
     public function reset(Request $request, string $id)
     {
-        $habit = Habit::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $habit = Habit::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$habit) {

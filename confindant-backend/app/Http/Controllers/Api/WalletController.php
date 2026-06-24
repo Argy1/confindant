@@ -16,7 +16,7 @@ class WalletController extends Controller
 
     public function index(Request $request)
     {
-        $wallets = Wallet::where('user_id', (string) $request->user()->_id)
+        $wallets = Wallet::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -33,7 +33,7 @@ class WalletController extends Controller
 
         $wallet = Wallet::create([
             ...$validated,
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
         ]);
 
         return $this->ok($wallet, 'Wallet berhasil dibuat', [], 201);
@@ -41,8 +41,8 @@ class WalletController extends Controller
 
     public function show(Request $request, string $id)
     {
-        $wallet = Wallet::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $wallet = Wallet::where('id',$id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$wallet) {
@@ -54,8 +54,8 @@ class WalletController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $wallet = Wallet::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $wallet = Wallet::where('id',$id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$wallet) {
@@ -75,8 +75,8 @@ class WalletController extends Controller
 
     public function destroy(Request $request, string $id)
     {
-        $wallet = Wallet::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $wallet = Wallet::where('id',$id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$wallet) {
@@ -98,11 +98,11 @@ class WalletController extends Controller
             'date' => 'nullable|date',
         ]);
 
-        $userId = (string) $request->user()->_id;
-        $from = Wallet::where('_id', (string) $validated['from_wallet_id'])
+        $userId = (string) $request->user()->id;
+        $from = Wallet::where('id',(string) $validated['from_wallet_id'])
             ->where('user_id', $userId)
             ->first();
-        $to = Wallet::where('_id', (string) $validated['to_wallet_id'])
+        $to = Wallet::where('id',(string) $validated['to_wallet_id'])
             ->where('user_id', $userId)
             ->first();
 
@@ -124,7 +124,7 @@ class WalletController extends Controller
 
         $outgoing = Transaction::create([
             'user_id' => $userId,
-            'wallet_id' => (string) $from->_id,
+            'wallet_id' => (string) $from->id,
             'type' => 'expense',
             'source' => null,
             'category' => 'Transfer Out',
@@ -144,7 +144,7 @@ class WalletController extends Controller
 
         $incoming = Transaction::create([
             'user_id' => $userId,
-            'wallet_id' => (string) $to->_id,
+            'wallet_id' => (string) $to->id,
             'type' => 'income',
             'source' => 'Transfer In',
             'category' => 'Transfer In',

@@ -13,7 +13,7 @@ class GoalController extends Controller
 
     public function index(Request $request)
     {
-        $goals = Goal::where('user_id', (string) $request->user()->_id)
+        $goals = Goal::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -33,7 +33,7 @@ class GoalController extends Controller
 
         $goal = Goal::create([
             ...$validated,
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
             'current_amount' => 0,
             'contributions' => [],
             'auto_topup_enabled' => (bool) ($validated['auto_topup_enabled'] ?? false),
@@ -45,8 +45,8 @@ class GoalController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $goal = Goal::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $goal = Goal::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$goal) {
@@ -73,8 +73,8 @@ class GoalController extends Controller
 
     public function destroy(Request $request, string $id)
     {
-        $goal = Goal::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $goal = Goal::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$goal) {
@@ -88,8 +88,8 @@ class GoalController extends Controller
 
     public function addContribution(Request $request, string $id)
     {
-        $goal = Goal::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $goal = Goal::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$goal) {

@@ -17,7 +17,7 @@ class DashboardController extends Controller
 
     public function index(Request $request, AiFinanceInsightService $insightService)
     {
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
 
         $wallets = Wallet::where('user_id', $userId)->get();
         $budgets = Budget::where('user_id', $userId)->get();
@@ -35,7 +35,7 @@ class DashboardController extends Controller
                     ? ((string) ($trx->source ?: $trx->category ?: 'Income'))
                     : ucfirst((string) ($trx->category ?: 'Transaction')));
             return [
-                'id' => (string) $trx->_id,
+                'id' => (string) $trx->id,
                 'wallet_id' => (string) $trx->wallet_id,
                 'title' => $title,
                 'subtitle' => $date->format('d M Y, H:i'),
@@ -56,7 +56,7 @@ class DashboardController extends Controller
                 ->sum('total_amount');
 
             return [
-                'id' => (string) $budget->_id,
+                'id' => (string) $budget->id,
                 'category' => (string) $budget->category,
                 'used' => (float) $used,
                 'limit' => (float) $budget->limit_amount,

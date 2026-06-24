@@ -57,8 +57,8 @@ class AiController extends Controller
 
         $transactionId = $validated['transaction_id'] ?? null;
         if ($transactionId) {
-            $transaction = Transaction::where('_id', (string) $transactionId)
-                ->where('user_id', (string) $request->user()->_id)
+            $transaction = Transaction::where('id', (string) $transactionId)
+                ->where('user_id', (string) $request->user()->id)
                 ->first();
             if (!$transaction) {
                 return $this->fail('Transaksi tidak ditemukan', [], 404);
@@ -66,7 +66,7 @@ class AiController extends Controller
         }
 
         $feedback = AiFeedback::create([
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
             'transaction_id' => $transactionId,
             'input_context' => $validated['input_context'] ?? null,
             'suggested_category' => $validated['suggested_category'],
@@ -88,7 +88,7 @@ class AiController extends Controller
         ]);
 
         $forecast = $service->cashflowForecast(
-            (string) $request->user()->_id,
+            (string) $request->user()->id,
             (int) ($validated['days'] ?? 30),
             $validated['wallet_id'] ?? null
         );
@@ -112,7 +112,7 @@ class AiController extends Controller
             : null;
 
         $recommendations = $service->budgetRecommendations(
-            (string) $request->user()->_id,
+            (string) $request->user()->id,
             $fromDate,
             $toDate,
             $validated['wallet_id'] ?? null
@@ -128,7 +128,7 @@ class AiController extends Controller
         ]);
 
         $days = (int) ($validated['days'] ?? 30);
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
         $from = now()->subDays($days);
 
         $jobs = ReceiptOcrJob::where('user_id', $userId)
@@ -228,7 +228,7 @@ class AiController extends Controller
             : null;
 
         $simulation = $service->simulateBudgetAdjustment(
-            (string) $request->user()->_id,
+            (string) $request->user()->id,
             (string) $validated['category'],
             (float) $validated['change_percent'],
             $fromDate,
@@ -251,13 +251,13 @@ class AiController extends Controller
         ]);
 
         $result = $service->answer(
-            (string) $request->user()->_id,
+            (string) $request->user()->id,
             (string) $validated['query'],
             $validated['locale'] ?? null
         );
 
         $saved = AiFinanceQueryHistory::create([
-            'user_id' => (string) $request->user()->_id,
+            'user_id' => (string) $request->user()->id,
             'query' => (string) $result['query'],
             'locale' => $validated['locale'] ?? null,
             'period' => $result['period'] ?? null,
@@ -269,7 +269,7 @@ class AiController extends Controller
             'fallback' => (bool) ($result['fallback'] ?? false),
         ]);
 
-        $result['history_id'] = (string) ($saved->_id ?? '');
+        $result['history_id'] = (string) ($saved->id ?? '');
 
         return $this->ok($result, 'AI finance query berhasil diproses');
     }
@@ -307,7 +307,7 @@ class AiController extends Controller
         ]);
 
         $limit = (int) ($validated['limit'] ?? 20);
-        $items = AiFinanceQueryHistory::where('user_id', (string) $request->user()->_id)
+        $items = AiFinanceQueryHistory::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get();
@@ -317,7 +317,7 @@ class AiController extends Controller
 
     public function clearFinanceQueryHistory(Request $request)
     {
-        AiFinanceQueryHistory::where('user_id', (string) $request->user()->_id)->delete();
+        AiFinanceQueryHistory::where('user_id', (string) $request->user()->id)->delete();
 
         return $this->ok(null, 'Riwayat AI finance query berhasil dihapus');
     }
@@ -328,8 +328,8 @@ class AiController extends Controller
             'query' => 'required|string|max:1000',
         ]);
 
-        $item = AiFinanceQueryHistory::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $item = AiFinanceQueryHistory::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
         if (!$item) {
             return $this->fail('Riwayat AI tidak ditemukan', [], 404);
@@ -344,8 +344,8 @@ class AiController extends Controller
 
     public function deleteFinanceQueryHistoryItem(Request $request, string $id)
     {
-        $item = AiFinanceQueryHistory::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $item = AiFinanceQueryHistory::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
         if (!$item) {
             return $this->fail('Riwayat AI tidak ditemukan', [], 404);

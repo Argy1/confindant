@@ -2,13 +2,10 @@
 
 namespace App\Models;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class ReceiptOcrFeedback extends Model
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'receipt_ocr_feedback';
-
     protected $fillable = [
         'user_id',
         'ocr_job_id',
@@ -31,4 +28,3 @@ class ReceiptOcrFeedback extends Model
         'created_at_client' => 'datetime',
     ];
 }
-

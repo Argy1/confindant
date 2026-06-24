@@ -15,7 +15,7 @@ class RecurringTransactionController extends Controller
 
     public function index(Request $request)
     {
-        $items = RecurringTransaction::where('user_id', (string) $request->user()->_id)
+        $items = RecurringTransaction::where('user_id', (string) $request->user()->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -25,7 +25,7 @@ class RecurringTransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validatePayload($request);
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
 
         if (!$this->findOwnedWallet($userId, (string) $validated['wallet_id'])) {
             return $this->fail('Wallet tidak ditemukan', [], 404);
@@ -64,8 +64,8 @@ class RecurringTransactionController extends Controller
 
     public function show(Request $request, string $id)
     {
-        $item = RecurringTransaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $item = RecurringTransaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$item) {
@@ -77,8 +77,8 @@ class RecurringTransactionController extends Controller
 
     public function update(Request $request, string $id)
     {
-        $item = RecurringTransaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $item = RecurringTransaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$item) {
@@ -86,7 +86,7 @@ class RecurringTransactionController extends Controller
         }
 
         $validated = $this->validatePayload($request, true);
-        $userId = (string) $request->user()->_id;
+        $userId = (string) $request->user()->id;
 
         if (isset($validated['wallet_id']) && !$this->findOwnedWallet($userId, (string) $validated['wallet_id'])) {
             return $this->fail('Wallet tidak ditemukan', [], 404);
@@ -118,8 +118,8 @@ class RecurringTransactionController extends Controller
 
     public function destroy(Request $request, string $id)
     {
-        $item = RecurringTransaction::where('_id', $id)
-            ->where('user_id', (string) $request->user()->_id)
+        $item = RecurringTransaction::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
             ->first();
 
         if (!$item) {
@@ -156,7 +156,7 @@ class RecurringTransactionController extends Controller
 
     private function findOwnedWallet(string $userId, string $walletId): ?Wallet
     {
-        return Wallet::where('_id', $walletId)
+        return Wallet::where('id', $walletId)
             ->where('user_id', $userId)
             ->first();
     }
