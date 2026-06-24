@@ -1,18 +1,22 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\AccountingImportController;
 use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\FixedAssetController;
 use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\HabitController;
 use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReceivablePayableController;
 use App\Http\Controllers\Api\RecurringTransactionController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\RestrictedFundController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
@@ -109,5 +113,28 @@ Route::prefix('v1')->group(function () {
         Route::get('/accounting/reports/activities', [ReportController::class, 'statementOfActivities']);
         Route::get('/accounting/reports/trial-balance', [ReportController::class, 'trialBalance']);
         Route::get('/accounting/reports/ledger/{accountId}', [ReportController::class, 'generalLedger']);
+
+        // Aktiva Tetap & Penyusutan (Fase C)
+        Route::get('/accounting/fixed-assets', [FixedAssetController::class, 'index']);
+        Route::post('/accounting/fixed-assets', [FixedAssetController::class, 'store']);
+        Route::get('/accounting/fixed-assets/{id}', [FixedAssetController::class, 'show']);
+        Route::delete('/accounting/fixed-assets/{id}', [FixedAssetController::class, 'destroy']);
+        Route::post('/accounting/fixed-assets/run-depreciation', [FixedAssetController::class, 'runDepreciation']);
+
+        // Piutang & Hutang (Fase D)
+        Route::get('/accounting/receivables-payables', [ReceivablePayableController::class, 'index']);
+        Route::post('/accounting/receivables-payables', [ReceivablePayableController::class, 'store']);
+        Route::get('/accounting/receivables-payables/{id}', [ReceivablePayableController::class, 'show']);
+        Route::post('/accounting/receivables-payables/{id}/settle', [ReceivablePayableController::class, 'settle']);
+
+        // Dana Titipan / Restricted Funds (Fase D)
+        Route::get('/accounting/restricted-funds', [RestrictedFundController::class, 'index']);
+        Route::post('/accounting/restricted-funds', [RestrictedFundController::class, 'store']);
+        Route::get('/accounting/restricted-funds/{id}', [RestrictedFundController::class, 'show']);
+        Route::post('/accounting/restricted-funds/{id}/move', [RestrictedFundController::class, 'move']);
+
+        // Import Excel (Fase E)
+        Route::post('/accounting/import/harian', [AccountingImportController::class, 'importHarian'])
+            ->middleware('throttle:scan-upload');
     });
 });
