@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AiController;
 use App\Http\Controllers\Api\BudgetController;
@@ -7,9 +8,11 @@ use App\Http\Controllers\Api\ContentController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\HabitController;
+use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\RecurringTransactionController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WalletController;
@@ -88,5 +91,23 @@ Route::prefix('v1')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications', [NotificationController::class, 'store']);
         Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
+
+        // ============= ACCOUNTING (Organisasi / PDPI) =============
+        // Chart of Accounts
+        Route::get('/accounting/accounts', [AccountController::class, 'index']);
+        Route::post('/accounting/accounts', [AccountController::class, 'store']);
+        Route::patch('/accounting/accounts/{id}', [AccountController::class, 'update']);
+
+        // Jurnal Umum (double-entry)
+        Route::get('/accounting/journal', [JournalController::class, 'index']);
+        Route::post('/accounting/journal', [JournalController::class, 'store']);
+        Route::get('/accounting/journal/{id}', [JournalController::class, 'show']);
+        Route::post('/accounting/journal/{id}/void', [JournalController::class, 'void']);
+
+        // Laporan Keuangan
+        Route::get('/accounting/reports/balance-sheet', [ReportController::class, 'balanceSheet']);
+        Route::get('/accounting/reports/activities', [ReportController::class, 'statementOfActivities']);
+        Route::get('/accounting/reports/trial-balance', [ReportController::class, 'trialBalance']);
+        Route::get('/accounting/reports/ledger/{accountId}', [ReportController::class, 'generalLedger']);
     });
 });

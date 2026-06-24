@@ -45,6 +45,13 @@ trait ApiResponse
         if (is_array($value)) {
             $result = [];
             foreach ($value as $key => $item) {
+                // Keep identifier fields as strings so the frontend/mobile clients
+                // (which type ids as string) stay compatible regardless of the
+                // database returning integer primary keys.
+                if (is_string($key) && ($key === 'id' || str_ends_with($key, '_id')) && (is_int($item) || is_float($item))) {
+                    $result[$key] = (string) $item;
+                    continue;
+                }
                 $result[$key] = $this->transform($item);
             }
 

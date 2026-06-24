@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class AiFinanceQueryHistory extends Model
 {
+    protected $table = 'ai_finance_query_history';
+
     protected $fillable = [
         'user_id',
         'query',

@@ -4,6 +4,7 @@ namespace Tests\Feature\Api;
 
 use App\Jobs\ProcessReceiptOcrJob;
 use App\Models\ReceiptOcrJob;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
@@ -13,6 +14,7 @@ use Tests\TestCase;
 class ProfileAndContentApiTest extends TestCase
 {
     use ApiAuthHelpers;
+    use RefreshDatabase;
 
     public function test_change_password_legal_support_and_ocr_flow(): void
     {
@@ -183,7 +185,7 @@ class ProfileAndContentApiTest extends TestCase
             ->assertJsonPath('success', false);
 
         $this->assertNotNull(
-            ReceiptOcrJob::where('_id', $jobId)->first(),
+            ReceiptOcrJob::where('id', $jobId)->first(),
             'OCR job should exist in database'
         );
     }

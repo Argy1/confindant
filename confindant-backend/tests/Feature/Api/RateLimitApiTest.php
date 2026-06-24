@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Laravel\Sanctum\Sanctum;
 use Tests\Feature\Api\Concerns\ApiAuthHelpers;
@@ -10,6 +11,7 @@ use Tests\TestCase;
 class RateLimitApiTest extends TestCase
 {
     use ApiAuthHelpers;
+    use RefreshDatabase;
 
     public function test_ai_inference_endpoint_is_rate_limited(): void
     {

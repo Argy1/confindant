@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Laravel\Sanctum\Sanctum;
 use Tests\Feature\Api\Concerns\ApiAuthHelpers;
@@ -11,6 +12,7 @@ use Tests\TestCase;
 class FinanceApiTest extends TestCase
 {
     use ApiAuthHelpers;
+    use RefreshDatabase;
 
     public function test_wallet_budget_transaction_dashboard_and_analytics(): void
     {

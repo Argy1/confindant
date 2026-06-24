@@ -15,11 +15,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
-            'name' => 'Test User',
+            'username' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // Seed PDPI organization with its full Chart of Accounts.
+        $this->call(PdpiChartOfAccountsSeeder::class);
     }
 }

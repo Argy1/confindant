@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\Feature\Api\Concerns\ApiAuthHelpers;
 use Tests\TestCase;
@@ -9,6 +10,7 @@ use Tests\TestCase;
 class ContractApiTest extends TestCase
 {
     use ApiAuthHelpers;
+    use RefreshDatabase;
 
     public function test_dashboard_analytics_and_profile_contract_shape(): void
     {
