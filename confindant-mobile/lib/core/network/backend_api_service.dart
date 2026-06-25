@@ -768,6 +768,74 @@ class BackendApiService {
     );
   }
 
+  // ---- Org AI Chat ----
+
+  Future<Map<String, dynamic>> orgAiFinanceQuery(
+    String orgId, {
+    required String query,
+    String locale = 'id',
+  }) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/ai/finance-query',
+        body: {'organization_id': orgId, 'query': query, 'locale': locale},
+      ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> orgAiFinanceQueryHistory(
+    String orgId, {
+    int limit = 20,
+  }) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/ai/finance-query/history',
+        query: {'organization_id': orgId, 'limit': limit},
+      ),
+    );
+  }
+
+  Future<void> orgClearAiFinanceQueryHistory(String orgId) async {
+    await _client.delete(
+      '/v1/accounting/ai/finance-query/history?organization_id=$orgId',
+    );
+  }
+
+  // ---- Org Scan Struk ----
+
+  Future<Map<String, dynamic>> orgSubmitScanOcr(
+    String orgId, {
+    required String filePath,
+  }) async {
+    return _requireData(
+      await _client.postMultipart(
+        '/v1/transactions/scan-ocr',
+        fields: {'organization_id': orgId},
+        fileField: 'receipt_image',
+        filePath: filePath,
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgGetScanOcr(String jobId) async {
+    return _requireData(
+      await _client.get('/v1/transactions/scan-ocr/$jobId'),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgCommitScanOcrToJournal(
+    String orgId,
+    String jobId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/scan-ocr/$jobId/commit',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
   Map<String, dynamic> _requireData(Map<String, dynamic> json) {
     final success = json['success'] == true;
     if (!success) {

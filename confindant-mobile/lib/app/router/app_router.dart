@@ -17,7 +17,9 @@ import 'package:confindant/features/org/presentation/pages/org_activities_page.d
 import 'package:confindant/features/org/presentation/pages/org_balance_sheet_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_dashboard_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_fixed_assets_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_ai_chat_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_import_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_scan_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_journal_form_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_journal_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_ledger_page.dart';
@@ -235,6 +237,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.orgImport,
         builder: (context, state) => const OrgImportPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgAiChat,
+        builder: (context, state) => const OrgAiChatPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgScan,
+        builder: (context, state) => const OrgScanPage(),
       ),
     ],
     redirect: (context, state) {

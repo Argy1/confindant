@@ -39,4 +39,6 @@ abstract class RoutePaths {
   static const orgReceivablesPayables = '/org/receivables-payables';
   static const orgRestrictedFunds = '/org/restricted-funds';
   static const orgImport = '/org/import';
+  static const orgAiChat = '/org/ai-chat';
+  static const orgScan = '/org/scan-struk';
 }
