@@ -213,6 +213,68 @@ class FinancialReportService
         ];
     }
 
+    /**
+     * Monthly income vs expense totals for a year (for dashboard charts).
+     *
+     * @return array<int, array{month:int, label:string, revenue:float, expense:float, net:float}>
+     */
+    public function monthlyActivityTrend(int $organizationId, int $year): array
+    {
+        $accounts = $this->orgAccounts($organizationId)->keyBy('id');
+
+        // Only pull revenue/expense lines for the year, then group by month in
+        // PHP to stay database-agnostic (works on both PostgreSQL and SQLite).
+        $revenueExpenseIds = $accounts
+            ->filter(fn ($a) => in_array($a->type, [Account::TYPE_REVENUE, Account::TYPE_EXPENSE], true))
+            ->keys()
+            ->all();
+
+        $months = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $months[$m] = ['revenue' => 0.0, 'expense' => 0.0];
+        }
+
+        if (!empty($revenueExpenseIds)) {
+            $lines = JournalLine::query()
+                ->select(['account_id', 'date', 'debit', 'credit'])
+                ->where('organization_id', $organizationId)
+                ->whereIn('account_id', $revenueExpenseIds)
+                ->whereYear('date', $year)
+                ->whereHas('journalEntry', fn ($q) => $q->where('status', 'posted'))
+                ->get();
+
+            foreach ($lines as $line) {
+                $account = $accounts->get((int) $line->account_id);
+                if (!$account) {
+                    continue;
+                }
+                $m = (int) Carbon::parse($line->date)->month;
+                $signed = $account->signedBalance((float) $line->debit, (float) $line->credit);
+                if ($account->type === Account::TYPE_REVENUE) {
+                    $months[$m]['revenue'] += $signed;
+                } else {
+                    $months[$m]['expense'] += $signed;
+                }
+            }
+        }
+
+        $labels = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        $result = [];
+        for ($m = 1; $m <= 12; $m++) {
+            $rev = round($months[$m]['revenue'], 2);
+            $exp = round($months[$m]['expense'], 2);
+            $result[] = [
+                'month' => $m,
+                'label' => $labels[$m],
+                'revenue' => $rev,
+                'expense' => $exp,
+                'net' => round($rev - $exp, 2),
+            ];
+        }
+
+        return $result;
+    }
+
     // ----------------------------------------------------------------------
     // Internal helpers
     // ----------------------------------------------------------------------

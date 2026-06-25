@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\HabitController;
 use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReceivablePayableController;
 use App\Http\Controllers\Api\RecurringTransactionController;
@@ -97,6 +98,12 @@ Route::prefix('v1')->group(function () {
         Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead']);
 
         // ============= ACCOUNTING (Organisasi / PDPI) =============
+        // Organisasi milik user (untuk context switcher)
+        Route::get('/me/organizations', [OrganizationController::class, 'index']);
+
+        // Dashboard organisasi
+        Route::get('/accounting/dashboard', [ReportController::class, 'dashboard']);
+
         // Chart of Accounts
         Route::get('/accounting/accounts', [AccountController::class, 'index']);
         Route::post('/accounting/accounts', [AccountController::class, 'store']);

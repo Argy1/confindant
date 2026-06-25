@@ -27,6 +27,7 @@ import { authApi } from "@/lib/api/auth";
 import { useAuthStore } from "@/store/auth";
 import { initials } from "@/lib/utils";
 import { getApiErrorMessage } from "@/lib/api/client";
+import { DashboardStyleSetting } from "@/components/org/dashboard-style-setting";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -184,6 +185,9 @@ export default function ProfilePage() {
           </div>
         </Card>
       )}
+
+      {/* Dashboard style preference (only for org members) */}
+      <DashboardStyleSetting />
 
       {/* Sections */}
       {sections.map((sec) => (

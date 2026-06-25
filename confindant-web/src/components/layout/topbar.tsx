@@ -19,6 +19,7 @@ import { useAuthStore } from "@/store/auth";
 import { authApi } from "@/lib/api/auth";
 import { profileApi, notificationsApi } from "@/lib/api/profile";
 import { greeting, initials } from "@/lib/utils";
+import { WorkspaceSwitcher } from "./workspace-switcher";
 
 export function Topbar({ onMenu }: { onMenu: () => void }) {
   const router = useRouter();
@@ -60,6 +61,8 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
       >
         <Menu className="h-5 w-5" />
       </Button>
+
+      <WorkspaceSwitcher />
 
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground sm:text-sm">

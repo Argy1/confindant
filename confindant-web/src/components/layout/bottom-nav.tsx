@@ -8,10 +8,14 @@ import {
   Camera,
   PieChart,
   User as UserIcon,
+  BookText,
+  Scale,
+  ListTree,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useOrgStore } from "@/store/org";
 
-const items = [
+const personalItems = [
   { href: "/home", label: "Home", icon: LayoutDashboard },
   { href: "/transactions", label: "Transaksi", icon: ArrowLeftRight },
   { href: "/scan", label: "Scan", icon: Camera, primary: true },
@@ -19,8 +23,18 @@ const items = [
   { href: "/profile", label: "Profil", icon: UserIcon },
 ];
 
+const orgItems = [
+  { href: "/org/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/org/reports/balance-sheet", label: "Neraca", icon: Scale },
+  { href: "/org/journal", label: "Jurnal", icon: BookText, primary: true },
+  { href: "/org/reports/activities", label: "Aktivitas", icon: PieChart },
+  { href: "/org/accounts", label: "Akun", icon: ListTree },
+];
+
 export function BottomNav() {
   const pathname = usePathname();
+  const mode = useOrgStore((s) => s.mode);
+  const items = mode === "org" ? orgItems : personalItems;
   return (
     <nav className="sticky bottom-0 z-20 border-t border-border bg-card/95 backdrop-blur lg:hidden">
       <ul

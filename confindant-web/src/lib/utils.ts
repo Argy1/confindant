@@ -26,6 +26,23 @@ export function formatNumber(value: number | string | null | undefined): string 
   return new Intl.NumberFormat("id-ID").format(num);
 }
 
+/**
+ * Compact currency for dashboard cards: Rp 7,29 M / Rp 550 jt / Rp 12 rb.
+ */
+export function formatCompactCurrency(
+  value: number | string | null | undefined,
+): string {
+  const num = typeof value === "string" ? Number(value) : (value ?? 0);
+  if (!Number.isFinite(num)) return "Rp 0";
+  const abs = Math.abs(num);
+  const sign = num < 0 ? "-" : "";
+  if (abs >= 1_000_000_000)
+    return `${sign}Rp ${(abs / 1_000_000_000).toFixed(2)} M`;
+  if (abs >= 1_000_000) return `${sign}Rp ${(abs / 1_000_000).toFixed(1)} jt`;
+  if (abs >= 1_000) return `${sign}Rp ${(abs / 1_000).toFixed(0)} rb`;
+  return `${sign}Rp ${abs.toFixed(0)}`;
+}
+
 export function formatDate(
   iso: string | Date | null | undefined,
   opts?: Intl.DateTimeFormatOptions,
