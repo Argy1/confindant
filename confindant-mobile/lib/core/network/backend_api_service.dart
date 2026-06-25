@@ -513,6 +513,261 @@ class BackendApiService {
     return _requireData(await _client.post('/v1/notifications/$id/mark-read'));
   }
 
+  // ===================== ORGANIZATION ACCOUNTING =====================
+  // All accounting endpoints accept an organization_id so the backend resolves
+  // the active organization. Reports also carry a `meta` block, so these helpers
+  // return the whole envelope where needed.
+
+  Future<List<Map<String, dynamic>>> myOrganizations() async =>
+      _asList(await _client.get('/v1/me/organizations'));
+
+  Future<Map<String, dynamic>> orgDashboard(String orgId, {int? year}) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/dashboard',
+        query: {'organization_id': orgId, if (year != null) 'year': year},
+      ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> orgAccounts(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/accounts',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgBalanceSheet(
+    String orgId, {
+    String? asOf,
+  }) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/reports/balance-sheet',
+        query: {'organization_id': orgId, if (asOf != null) 'as_of': asOf},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgActivities(
+    String orgId, {
+    int? year,
+    String? fromDate,
+    String? toDate,
+  }) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/reports/activities',
+        query: {
+          'organization_id': orgId,
+          if (year != null) 'year': year,
+          if (fromDate != null) 'from_date': fromDate,
+          if (toDate != null) 'to_date': toDate,
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgTrialBalance(
+    String orgId, {
+    String? asOf,
+  }) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/reports/trial-balance',
+        query: {'organization_id': orgId, if (asOf != null) 'as_of': asOf},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgGeneralLedger(
+    String orgId,
+    String accountId, {
+    String? fromDate,
+    String? toDate,
+  }) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/reports/ledger/$accountId',
+        query: {
+          'organization_id': orgId,
+          if (fromDate != null) 'from_date': fromDate,
+          if (toDate != null) 'to_date': toDate,
+        },
+      ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> orgJournal(
+    String orgId, {
+    int page = 1,
+    int perPage = 50,
+    String? status,
+    String? fromDate,
+    String? toDate,
+  }) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/journal',
+        query: {
+          'organization_id': orgId,
+          'page': page,
+          'per_page': perPage,
+          if (status != null) 'status': status,
+          if (fromDate != null) 'from_date': fromDate,
+          if (toDate != null) 'to_date': toDate,
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgJournalShow(String orgId, String id) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/journal/$id',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgJournalCreate(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/journal',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgJournalVoid(String orgId, String id) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/journal/$id/void',
+        body: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  // --- Fixed assets ---
+
+  Future<List<Map<String, dynamic>>> orgFixedAssets(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/fixed-assets',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgCreateFixedAsset(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/fixed-assets',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgRunDepreciation(
+    String orgId,
+    int year,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/fixed-assets/run-depreciation',
+        body: {'organization_id': orgId, 'year': year},
+      ),
+    );
+  }
+
+  // --- Receivables / payables ---
+
+  Future<List<Map<String, dynamic>>> orgReceivablesPayables(
+    String orgId, {
+    String? type,
+    String? status,
+  }) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/receivables-payables',
+        query: {
+          'organization_id': orgId,
+          if (type != null) 'type': type,
+          if (status != null) 'status': status,
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgCreateReceivablePayable(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/receivables-payables',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgSettleReceivablePayable(
+    String orgId,
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/receivables-payables/$id/settle',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  // --- Restricted funds ---
+
+  Future<List<Map<String, dynamic>>> orgRestrictedFunds(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/restricted-funds',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgCreateRestrictedFund(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/restricted-funds',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgMoveRestrictedFund(
+    String orgId,
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/restricted-funds/$id/move',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
   Map<String, dynamic> _requireData(Map<String, dynamic> json) {
     final success = json['success'] == true;
     if (!success) {

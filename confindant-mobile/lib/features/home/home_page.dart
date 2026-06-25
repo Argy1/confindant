@@ -6,6 +6,7 @@ import 'package:confindant/app/theme/app_spacing.dart';
 import 'package:confindant/app/theme/app_text_styles.dart';
 import 'package:confindant/app/widgets/widgets.dart';
 import 'package:confindant/core/ai/ai_settings_controller.dart';
+import 'package:confindant/features/org/presentation/widgets/workspace_switcher.dart';
 import 'package:confindant/core/constants/app_providers.dart';
 import 'package:confindant/core/utils/time_greeting.dart';
 import 'package:confindant/features/analytics/presentation/view_models/analytics_view_model.dart';
@@ -72,6 +73,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                 name: profile.fullName.isEmpty ? 'User' : profile.fullName,
                 avatarPath: profile.avatarPath,
                 onNotificationTap: () => context.push(RoutePaths.profileNotifications),
+              ),
+              const SizedBox(height: AppSpacing.md),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: WorkspaceSwitcherButton(),
               ),
               const SizedBox(height: AppSpacing.xl),
               _BalanceHeroCard(

@@ -12,6 +12,18 @@ import 'package:confindant/features/goals/presentation/pages/goal_detail_page.da
 import 'package:confindant/features/goals/presentation/pages/goals_page.dart';
 import 'package:confindant/features/home/home_page.dart';
 import 'package:confindant/features/onboarding/onboarding_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_accounts_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_activities_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_balance_sheet_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_dashboard_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_fixed_assets_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_import_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_journal_form_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_journal_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_ledger_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_receivables_payables_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_restricted_funds_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_trial_balance_page.dart';
 import 'package:confindant/features/profile/about_page.dart';
 import 'package:confindant/features/profile/ai_finance_chat_page.dart';
 import 'package:confindant/features/profile/ai_ocr_health_page.dart';
@@ -173,6 +185,56 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.recurringTransactions,
         builder: (context, state) => const RecurringTransactionsPage(),
+      ),
+
+      // ---- Organization accounting (M1 placeholders; filled in M2-M4) ----
+      GoRoute(
+        path: RoutePaths.orgDashboard,
+        builder: (context, state) => const OrgDashboardPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgBalanceSheet,
+        builder: (context, state) => const OrgBalanceSheetPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgActivities,
+        builder: (context, state) => const OrgActivitiesPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgJournal,
+        builder: (context, state) => const OrgJournalPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgJournalNew,
+        builder: (context, state) => const OrgJournalFormPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgTrialBalance,
+        builder: (context, state) => const OrgTrialBalancePage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgLedger,
+        builder: (context, state) => const OrgLedgerPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgAccounts,
+        builder: (context, state) => const OrgAccountsPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgFixedAssets,
+        builder: (context, state) => const OrgFixedAssetsPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgReceivablesPayables,
+        builder: (context, state) => const OrgReceivablesPayablesPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgRestrictedFunds,
+        builder: (context, state) => const OrgRestrictedFundsPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgImport,
+        builder: (context, state) => const OrgImportPage(),
       ),
     ],
     redirect: (context, state) {

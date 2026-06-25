@@ -25,4 +25,18 @@ abstract class RoutePaths {
   static const analyticsFilter = '/analytics/filter';
   static const analyticsExport = '/analytics/export';
   static const recurringTransactions = '/recurring-transactions';
+
+  // ---- Organization accounting ----
+  static const orgDashboard = '/org/dashboard';
+  static const orgBalanceSheet = '/org/balance-sheet';
+  static const orgActivities = '/org/activities';
+  static const orgTrialBalance = '/org/trial-balance';
+  static const orgJournal = '/org/journal';
+  static const orgJournalNew = '/org/journal/new';
+  static const orgLedger = '/org/ledger';
+  static const orgAccounts = '/org/accounts';
+  static const orgFixedAssets = '/org/fixed-assets';
+  static const orgReceivablesPayables = '/org/receivables-payables';
+  static const orgRestrictedFunds = '/org/restricted-funds';
+  static const orgImport = '/org/import';
 }

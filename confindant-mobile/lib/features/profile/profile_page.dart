@@ -6,6 +6,7 @@ import 'package:confindant/app/theme/app_spacing.dart';
 import 'package:confindant/app/theme/app_text_styles.dart';
 import 'package:confindant/app/widgets/widgets.dart';
 import 'package:confindant/core/constants/app_providers.dart';
+import 'package:confindant/features/org/presentation/widgets/workspace_switcher.dart';
 import 'package:confindant/features/profile/presentation/view_models/profile_settings_view_model.dart';
 import 'package:confindant/features/profile/presentation/widgets/widgets.dart';
 import 'package:confindant/l10n/app_localizations.dart';
@@ -51,6 +52,8 @@ class ProfilePage extends ConsumerWidget {
                 email: user.email,
                 avatarPath: user.avatarPath,
               ),
+              const SizedBox(height: AppSpacing.md),
+              const WorkspaceSwitcherButton(),
               const SizedBox(height: AppSpacing.lg),
               _ProfileSectionCard(
                 title: l10n.profileAccountSettings,
