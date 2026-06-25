@@ -38,7 +38,7 @@ class _OrgMembersPageState extends ConsumerState<OrgMembersPage>
   List<OrgMemberData> _members = const [];
   List<OrgInvitationData> _invitations = const [];
   bool _loadingMembers = true;
-  bool _loadingInvites = true;
+  bool _loadingInvites = false; // loaded lazily when tab 1 is first opened
 
   @override
   void initState() {
@@ -139,10 +139,7 @@ class _OrgMembersPageState extends ConsumerState<OrgMembersPage>
                   controller: _tabs,
                   tabs: [
                     Tab(text: 'Anggota (${_members.length})'),
-                    if (isAdmin)
-                      Tab(
-                          text:
-                              'Undangan (${_invitations.length})'),
+                    Tab(text: 'Undangan (${_invitations.length})'),
                   ],
                 ),
                 Expanded(
@@ -158,14 +155,13 @@ class _OrgMembersPageState extends ConsumerState<OrgMembersPage>
                         onRemove: (m) => _removeMember(orgId, m),
                         onRefresh: _loadMembers,
                       ),
-                      if (isAdmin)
-                        _InvitationsTab(
-                          invitations: _invitations,
-                          loading: _loadingInvites,
-                          onCancel: (inv) =>
-                              _cancelInvite(orgId, inv),
-                          onRefresh: () => _loadInvites(orgId),
-                        ),
+                      _InvitationsTab(
+                        invitations: _invitations,
+                        loading: _loadingInvites,
+                        isAdmin: isAdmin,
+                        onCancel: (inv) => _cancelInvite(orgId, inv),
+                        onRefresh: () => _loadInvites(orgId),
+                      ),
                     ],
                   ),
                 ),
@@ -395,12 +391,14 @@ class _InvitationsTab extends StatelessWidget {
   const _InvitationsTab({
     required this.invitations,
     required this.loading,
+    required this.isAdmin,
     required this.onCancel,
     required this.onRefresh,
   });
 
   final List<OrgInvitationData> invitations;
   final bool loading;
+  final bool isAdmin;
   final void Function(OrgInvitationData) onCancel;
   final Future<void> Function() onRefresh;
 
@@ -434,12 +432,14 @@ class _InvitationsTab extends StatelessWidget {
               style: AppTextStyles.caption
                   .copyWith(color: AppColors.textSecondary, fontSize: 11),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.close_rounded,
-                  size: 18, color: Color(0xFFDC2626)),
-              tooltip: 'Batalkan',
-              onPressed: () => onCancel(inv),
-            ),
+            trailing: isAdmin
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        size: 18, color: Color(0xFFDC2626)),
+                    tooltip: 'Batalkan',
+                    onPressed: () => onCancel(inv),
+                  )
+                : null,
           );
         },
       ),

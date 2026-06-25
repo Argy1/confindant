@@ -154,7 +154,7 @@ class OrgBudgetData {
       fiscalYear: asInt(json['fiscal_year'], fallback: DateTime.now().year),
       amountPlanned: asDouble(json['amount_planned']),
       category: json['category']?.toString(),
-      accountId: acc != null ? normalizeId(acc) : null,
+      accountId: acc != null ? normalizeId(Map<String, dynamic>.from(acc)) : null,
       accountCode: acc?['code']?.toString(),
       accountName: acc?['name']?.toString(),
       notes: json['notes']?.toString(),
