@@ -768,6 +768,199 @@ class BackendApiService {
     );
   }
 
+  // ---- Org Members ----
+
+  Future<List<Map<String, dynamic>>> orgMemberList(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/members',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgMemberUpdateRole(
+    String orgId,
+    String userId,
+    String role,
+  ) async {
+    return _requireData(
+      await _client.patch(
+        '/v1/accounting/members/$userId',
+        body: {'organization_id': orgId, 'role': role},
+      ),
+    );
+  }
+
+  Future<void> orgMemberRemove(String orgId, String userId) async {
+    await _client.delete(
+      '/v1/accounting/members/$userId?organization_id=$orgId',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> orgInvitationList(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/members/invitations',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgInviteCreate(
+    String orgId,
+    String email,
+    String role,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/members/invite',
+        body: {'organization_id': orgId, 'email': email, 'role': role},
+      ),
+    );
+  }
+
+  Future<void> orgInviteCancel(String orgId, String token) async {
+    await _client.delete(
+      '/v1/accounting/members/invitations/$token?organization_id=$orgId',
+    );
+  }
+
+  Future<Map<String, dynamic>> orgInviteInfo(String token) async {
+    return _requireData(
+      await _client.get('/v1/org-invite/$token'),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgInviteAccept(String token) async {
+    return _requireData(
+      await _client.post('/v1/org-invite/$token/accept'),
+    );
+  }
+
+  // ---- Org Budget ----
+
+  Future<List<Map<String, dynamic>>> orgBudgetList(
+    String orgId, {
+    int? fiscalYear,
+  }) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/budget',
+        query: {
+          'organization_id': orgId,
+          ...?fiscalYear != null ? {'fiscal_year': fiscalYear} : null,
+        },
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgBudgetCreate(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/budget',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgBudgetUpdate(
+    String orgId,
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.patch(
+        '/v1/accounting/budget/$id',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<void> orgBudgetDelete(String orgId, String id) async {
+    await _client.delete('/v1/accounting/budget/$id?organization_id=$orgId');
+  }
+
+  Future<Map<String, dynamic>> orgBudgetCompare(
+    String orgId, {
+    int? fiscalYear,
+  }) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/budget/compare',
+        query: {
+          'organization_id': orgId,
+          ...?fiscalYear != null ? {'fiscal_year': fiscalYear} : null,
+        },
+      ),
+    );
+  }
+
+  // ---- Org PDF Export ----
+
+  Future<List<int>> orgDownloadReportPdf(
+    String orgId,
+    String type, {
+    Map<String, dynamic>? params,
+  }) async {
+    return _client.getBytes(
+      '/v1/accounting/reports/$type/pdf',
+      query: {'organization_id': orgId, ...?params},
+    );
+  }
+
+  // ---- Org Recurring Entries ----
+
+  Future<List<Map<String, dynamic>>> orgRecurringList(String orgId) async {
+    return _asList(
+      await _client.get(
+        '/v1/accounting/recurring',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgRecurringCreate(
+    String orgId,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/recurring',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<Map<String, dynamic>> orgRecurringUpdate(
+    String orgId,
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    return _requireData(
+      await _client.patch(
+        '/v1/accounting/recurring/$id',
+        body: {'organization_id': orgId, ...body},
+      ),
+    );
+  }
+
+  Future<void> orgRecurringDelete(String orgId, String id) async {
+    await _client.delete('/v1/accounting/recurring/$id?organization_id=$orgId');
+  }
+
+  Future<Map<String, dynamic>> orgRecurringRun(String orgId, String id) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/recurring/$id/run',
+        body: {'organization_id': orgId},
+      ),
+    );
+  }
+
   // ---- Org AI Chat ----
 
   Future<Map<String, dynamic>> orgAiFinanceQuery(

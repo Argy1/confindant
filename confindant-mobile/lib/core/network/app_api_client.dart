@@ -74,6 +74,18 @@ class AppApiClient {
     return _asMap(response.data);
   }
 
+  Future<List<int>> getBytes(
+    String path, {
+    Map<String, dynamic>? query,
+  }) async {
+    final response = await _dio.get<List<int>>(
+      path,
+      queryParameters: query,
+      options: Options(responseType: ResponseType.bytes),
+    );
+    return response.data ?? const [];
+  }
+
   Future<Map<String, dynamic>> postMultipart(
     String path, {
     required Map<String, dynamic> fields,

@@ -19,7 +19,11 @@ import 'package:confindant/features/org/presentation/pages/org_dashboard_page.da
 import 'package:confindant/features/org/presentation/pages/org_fixed_assets_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_ai_chat_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_import_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_budget_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_recurring_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_scan_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_members_page.dart';
+import 'package:confindant/features/org/presentation/pages/org_invite_accept_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_journal_form_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_journal_page.dart';
 import 'package:confindant/features/org/presentation/pages/org_ledger_page.dart';
@@ -239,12 +243,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const OrgImportPage(),
       ),
       GoRoute(
+        path: RoutePaths.orgBudget,
+        builder: (context, state) => const OrgBudgetPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgRecurring,
+        builder: (context, state) => const OrgRecurringPage(),
+      ),
+      GoRoute(
         path: RoutePaths.orgAiChat,
         builder: (context, state) => const OrgAiChatPage(),
       ),
       GoRoute(
         path: RoutePaths.orgScan,
         builder: (context, state) => const OrgScanPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgMembers,
+        builder: (context, state) => const OrgMembersPage(),
+      ),
+      GoRoute(
+        path: RoutePaths.orgInviteAccept,
+        builder: (context, state) {
+          final token = state.pathParameters['token'] ?? '';
+          return OrgInviteAcceptPage(token: token);
+        },
       ),
     ],
     redirect: (context, state) {

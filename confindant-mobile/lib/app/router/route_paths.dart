@@ -41,4 +41,8 @@ abstract class RoutePaths {
   static const orgImport = '/org/import';
   static const orgAiChat = '/org/ai-chat';
   static const orgScan = '/org/scan-struk';
+  static const orgRecurring = '/org/recurring';
+  static const orgBudget = '/org/budget';
+  static const orgMembers = '/org/members';
+  static const orgInviteAccept = '/org-invite/:token';
 }

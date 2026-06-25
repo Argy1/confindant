@@ -1,5 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:confindant/app/theme/app_colors.dart';
+import 'package:confindant/core/constants/app_providers.dart';
 import 'package:confindant/features/org/data/org_data_source.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:confindant/features/org/models/report_models.dart';
 import 'package:confindant/features/org/presentation/widgets/org_formatters.dart';
 import 'package:confindant/features/org/presentation/widgets/org_report_widgets.dart';
@@ -18,6 +22,36 @@ class OrgTrialBalancePage extends ConsumerStatefulWidget {
 
 class _OrgTrialBalancePageState extends ConsumerState<OrgTrialBalancePage> {
   int _year = DateTime.now().year;
+  bool _downloading = false;
+
+  Future<void> _downloadPdf(String orgId) async {
+    setState(() => _downloading = true);
+    try {
+      final bytes = await ref
+          .read(backendApiServiceProvider)
+          .orgDownloadReportPdf(
+            orgId,
+            'trial-balance',
+            params: {'as_of': '$_year-12-31'},
+          );
+      await FileSaver.instance.saveFile(
+        name: 'neraca-saldo-$_year',
+        bytes: Uint8List.fromList(bytes),
+        mimeType: MimeType.pdf,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PDF berhasil disimpan.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal unduh PDF: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +60,24 @@ class _OrgTrialBalancePageState extends ConsumerState<OrgTrialBalancePage> {
     return OrgScaffold(
       title: 'Neraca Saldo',
       current: OrgNavItem.more,
+      actions: orgId == null
+          ? null
+          : [
+              IconButton(
+                icon: _downloading
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: AppColors.blue900,
+                        ),
+                      )
+                    : const Icon(Icons.picture_as_pdf_rounded),
+                tooltip: 'Unduh PDF',
+                onPressed: _downloading ? null : () => _downloadPdf(orgId),
+              ),
+            ],
       child: orgId == null
           ? const Center(child: Text('Belum ada organisasi'))
           : ListView(
