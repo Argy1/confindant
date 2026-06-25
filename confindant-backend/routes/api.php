@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OrgBudgetController;
 use App\Http\Controllers\Api\OrganizationController;
+use App\Http\Controllers\Api\OrganizationInvitationController;
+use App\Http\Controllers\Api\OrganizationMemberController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReceivablePayableController;
 use App\Http\Controllers\Api\RecurringOrgEntryController;
@@ -43,6 +45,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/register', [UserController::class, 'register']);
         Route::post('/login', [UserController::class, 'login']);
     });
+
+    // Public invitation info (no auth required)
+    Route::get('/org-invite/{token}', [OrganizationInvitationController::class, 'info']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', [UserController::class, 'me']);
@@ -166,6 +171,15 @@ Route::prefix('v1')->group(function () {
         Route::patch('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'update']);
         Route::delete('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'destroy']);
         Route::post('/accounting/recurring/{id}/run', [RecurringOrgEntryController::class, 'run']);
+
+        // Manajemen Anggota (Sprint 5)
+        Route::get('/accounting/members', [OrganizationMemberController::class, 'index']);
+        Route::post('/accounting/members/invite', [OrganizationInvitationController::class, 'invite']);
+        Route::get('/accounting/members/invitations', [OrganizationInvitationController::class, 'index']);
+        Route::delete('/accounting/members/invitations/{token}', [OrganizationInvitationController::class, 'cancel']);
+        Route::patch('/accounting/members/{userId}', [OrganizationMemberController::class, 'update']);
+        Route::delete('/accounting/members/{userId}', [OrganizationMemberController::class, 'destroy']);
+        Route::post('/org-invite/{token}/accept', [OrganizationInvitationController::class, 'accept']);
 
         // Budget vs Realisasi (Sprint 4)
         Route::get('/accounting/budget', [OrgBudgetController::class, 'index']);

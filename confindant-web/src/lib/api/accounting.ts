@@ -7,10 +7,14 @@ import type {
   BudgetCompare,
   FixedAsset,
   GeneralLedger,
+  InviteInfo,
   JournalEntry,
   OrgBudget,
   OrgDashboard,
+  OrgInvitation,
+  OrgMember,
   Organization,
+  OrgRole,
   ReceivablePayable,
   RecurringOrgEntry,
   RestrictedFund,
@@ -31,6 +35,63 @@ function withOrg(orgId: string | null | undefined, params?: Record<string, unkno
 export const organizationApi = {
   async list() {
     const { data } = await api.get<ApiEnvelope<Organization[]>>("/me/organizations");
+    return unwrap(data);
+  },
+
+  async memberList(orgId: string) {
+    const { data } = await api.get<ApiEnvelope<OrgMember[]>>(
+      "/accounting/members",
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async memberUpdateRole(orgId: string, userId: number, role: OrgRole) {
+    const { data } = await api.patch<ApiEnvelope<OrgMember>>(
+      `/accounting/members/${userId}`,
+      { role },
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async memberRemove(orgId: string, userId: number) {
+    await api.delete(`/accounting/members/${userId}`, withOrg(orgId));
+  },
+
+  async invitationList(orgId: string) {
+    const { data } = await api.get<ApiEnvelope<OrgInvitation[]>>(
+      "/accounting/members/invitations",
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async inviteCreate(orgId: string, email: string, role: OrgRole) {
+    const { data } = await api.post<ApiEnvelope<{
+      token: string;
+      email: string;
+      role: OrgRole;
+      expires_at: string;
+      invite_url: string;
+    }>>("/accounting/members/invite", { organization_id: orgId, email, role });
+    return unwrap(data);
+  },
+
+  async inviteCancel(orgId: string, token: string) {
+    await api.delete(`/accounting/members/invitations/${token}`, withOrg(orgId));
+  },
+
+  async inviteInfo(token: string) {
+    const { data } = await api.get<ApiEnvelope<InviteInfo>>(`/org-invite/${token}`);
+    return unwrap(data);
+  },
+
+  async inviteAccept(token: string) {
+    const { data } = await api.post<ApiEnvelope<{
+      organization: { id: number; name: string; slug: string };
+      role: OrgRole;
+    }>>(`/org-invite/${token}/accept`, {});
     return unwrap(data);
   },
 };

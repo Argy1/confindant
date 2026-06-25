@@ -14,6 +14,7 @@ import {
   Camera,
   MessageSquareText,
   User as UserIcon,
+  Users,
   X,
   Bell,
   BookOpen,
@@ -61,7 +62,10 @@ export const personalNav: NavGroup[] = [
 
 export const orgNav: NavGroup[] = [
   {
-    items: [{ href: "/org/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+    items: [
+      { href: "/org/dashboard", label: "Dashboard", icon: LayoutDashboard },
+      { href: "/org/members", label: "Anggota", icon: Users },
+    ],
   },
   {
     heading: "Pembukuan",

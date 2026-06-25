@@ -234,6 +234,33 @@ export type RecurringOrgEntry = {
   created_at: string;
 };
 
+// ---- Manajemen Anggota (Sprint 5) ----
+
+export type OrgMember = {
+  id: number;
+  name: string;
+  email: string;
+  avatar: string | null;
+  role: OrgRole;
+  joined_at: string;
+};
+
+export type OrgInvitation = {
+  token: string;
+  email: string;
+  role: OrgRole;
+  invited_by: { id: number; name: string };
+  expires_at: string;
+  created_at: string;
+};
+
+export type InviteInfo = {
+  organization: { id: number; name: string; slug: string };
+  role: OrgRole;
+  invited_by: { name: string };
+  expires_at: string;
+};
+
 // ---- Budget vs Realisasi (Sprint 4) ----
 
 export type OrgBudget = {
