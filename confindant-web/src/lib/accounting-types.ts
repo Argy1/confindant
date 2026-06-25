@@ -213,6 +213,27 @@ export type RestrictedFundMovement = {
   description?: string | null;
 };
 
+export type RecurringOrgEntry = {
+  id: number;
+  organization_id: number;
+  debit_account_id: number;
+  credit_account_id: number;
+  description: string;
+  category: string | null;
+  amount: number;
+  frequency: "daily" | "weekly" | "monthly";
+  interval: number;
+  start_date: string;
+  next_run_at: string | null;
+  last_run_at: string | null;
+  end_date: string | null;
+  active: boolean;
+  total_runs: number;
+  debit_account?: Account | null;
+  credit_account?: Account | null;
+  created_at: string;
+};
+
 export type OrgDashboard = {
   year: number;
   summary: {

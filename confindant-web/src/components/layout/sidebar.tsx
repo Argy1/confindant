@@ -92,6 +92,7 @@ export const orgNav: NavGroup[] = [
     items: [
       { href: "/org/ai-chat", label: "AI Konsultan", icon: Sparkles },
       { href: "/org/scan", label: "Scan Struk", icon: Camera },
+      { href: "/org/recurring", label: "Jurnal Berulang", icon: Repeat },
     ],
   },
 ];

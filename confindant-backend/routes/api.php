@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReceivablePayableController;
+use App\Http\Controllers\Api\RecurringOrgEntryController;
 use App\Http\Controllers\Api\RecurringTransactionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\RestrictedFundController;
@@ -151,5 +152,12 @@ Route::prefix('v1')->group(function () {
 
         // Scan Struk untuk Org — commit OCR ke jurnal (Sprint 1)
         Route::post('/accounting/scan-ocr/{id}/commit', [JournalController::class, 'commitFromOcr']);
+
+        // Recurring Jurnal Org (Sprint 2)
+        Route::get('/accounting/recurring', [RecurringOrgEntryController::class, 'index']);
+        Route::post('/accounting/recurring', [RecurringOrgEntryController::class, 'store']);
+        Route::patch('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'update']);
+        Route::delete('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'destroy']);
+        Route::post('/accounting/recurring/{id}/run', [RecurringOrgEntryController::class, 'run']);
     });
 });

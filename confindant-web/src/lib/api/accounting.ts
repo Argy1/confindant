@@ -10,6 +10,7 @@ import type {
   OrgDashboard,
   Organization,
   ReceivablePayable,
+  RecurringOrgEntry,
   RestrictedFund,
   RestrictedFundMovement,
   StatementOfActivities,
@@ -300,6 +301,76 @@ export const accountingApi = {
     >("/accounting/import/harian", form, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+    return unwrap(data);
+  },
+
+  // ---- Recurring Org Entries (Sprint 2) ----
+
+  async recurringList(orgId: string) {
+    const { data } = await api.get<ApiEnvelope<RecurringOrgEntry[]>>(
+      "/accounting/recurring",
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async recurringCreate(
+    orgId: string,
+    payload: {
+      debit_account_id: number;
+      credit_account_id: number;
+      description: string;
+      category?: string | null;
+      amount: number;
+      frequency: "daily" | "weekly" | "monthly";
+      interval?: number;
+      start_date: string;
+      end_date?: string | null;
+      active?: boolean;
+    },
+  ) {
+    const { data } = await api.post<ApiEnvelope<RecurringOrgEntry>>(
+      "/accounting/recurring",
+      payload,
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async recurringUpdate(orgId: string, id: number, payload: Partial<{
+    debit_account_id: number;
+    credit_account_id: number;
+    description: string;
+    category: string | null;
+    amount: number;
+    frequency: "daily" | "weekly" | "monthly";
+    interval: number;
+    start_date: string;
+    end_date: string | null;
+    active: boolean;
+  }>) {
+    const { data } = await api.patch<ApiEnvelope<RecurringOrgEntry>>(
+      `/accounting/recurring/${id}`,
+      payload,
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async recurringDelete(orgId: string, id: number) {
+    const { data } = await api.delete<ApiEnvelope<null>>(
+      `/accounting/recurring/${id}`,
+      withOrg(orgId),
+    );
+    return data;
+  },
+
+  async recurringRun(orgId: string, id: number) {
+    const { data } = await api.post<ApiEnvelope<{ journal_entry: JournalEntry; recurring: RecurringOrgEntry }>>(
+      `/accounting/recurring/${id}/run`,
+      {},
+      withOrg(orgId),
+    );
     return unwrap(data);
   },
 
