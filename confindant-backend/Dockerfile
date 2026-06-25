@@ -1,18 +1,18 @@
-FROM php:8.2-cli
+FROM php:8.3-cli
 
 WORKDIR /app
 
-# System deps
+# System deps + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     libzip-dev \
     libssl-dev \
+    libpq-dev \
+    libgd-dev \
     pkg-config \
     ca-certificates \
-    && docker-php-ext-install zip \
-    && pecl install mongodb \
-    && docker-php-ext-enable mongodb \
+    && docker-php-ext-install zip pdo pdo_pgsql pgsql gd \
     && rm -rf /var/lib/apt/lists/*
 
 # Composer
@@ -34,5 +34,4 @@ RUN php artisan package:discover --ansi
 
 EXPOSE 10000
 
-# Render provides $PORT
-CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan storage:link --quiet 2>/dev/null || true && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
+CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan migrate --force && php artisan storage:link --quiet 2>/dev/null || true && php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"]
