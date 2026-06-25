@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\GoalController;
 use App\Http\Controllers\Api\HabitController;
 use App\Http\Controllers\Api\JournalController;
 use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OrgBudgetController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReceivablePayableController;
@@ -165,5 +166,12 @@ Route::prefix('v1')->group(function () {
         Route::patch('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'update']);
         Route::delete('/accounting/recurring/{id}', [RecurringOrgEntryController::class, 'destroy']);
         Route::post('/accounting/recurring/{id}/run', [RecurringOrgEntryController::class, 'run']);
+
+        // Budget vs Realisasi (Sprint 4)
+        Route::get('/accounting/budget', [OrgBudgetController::class, 'index']);
+        Route::post('/accounting/budget', [OrgBudgetController::class, 'store']);
+        Route::patch('/accounting/budget/{id}', [OrgBudgetController::class, 'update']);
+        Route::delete('/accounting/budget/{id}', [OrgBudgetController::class, 'destroy']);
+        Route::get('/accounting/budget/compare', [OrgBudgetController::class, 'compare']);
     });
 });

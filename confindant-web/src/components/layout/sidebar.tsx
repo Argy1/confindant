@@ -26,6 +26,7 @@ import {
   PiggyBank,
   Upload,
   Sparkles,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOrgStore } from "@/store/org";
@@ -85,6 +86,12 @@ export const orgNav: NavGroup[] = [
       { href: "/org/receivables-payables", label: "Piutang & Hutang", icon: HandCoins },
       { href: "/org/restricted-funds", label: "Dana Titipan", icon: PiggyBank },
       { href: "/org/import", label: "Import Excel", icon: Upload },
+    ],
+  },
+  {
+    heading: "Perencanaan",
+    items: [
+      { href: "/org/budget", label: "Budget & Realisasi", icon: BarChart3 },
     ],
   },
   {

@@ -234,6 +234,46 @@ export type RecurringOrgEntry = {
   created_at: string;
 };
 
+// ---- Budget vs Realisasi (Sprint 4) ----
+
+export type OrgBudget = {
+  id: number;
+  organization_id: number;
+  fiscal_year: number;
+  name: string;
+  category: string | null;
+  account_id: number | null;
+  account?: Pick<Account, "id" | "code" | "name" | "type"> | null;
+  amount_planned: number;
+  notes: string | null;
+  created_by: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BudgetCompareItem = {
+  id: number;
+  name: string;
+  category: string | null;
+  account: Pick<Account, "id" | "code" | "name" | "type"> | null;
+  amount_planned: number;
+  amount_actual: number;
+  percentage: number;
+  variance: number;
+  notes: string | null;
+};
+
+export type BudgetCompare = {
+  fiscal_year: number;
+  items: BudgetCompareItem[];
+  totals: {
+    total_planned: number;
+    total_actual: number;
+    total_variance: number;
+    overall_percentage: number;
+  };
+};
+
 export type OrgDashboard = {
   year: number;
   summary: {

@@ -4,9 +4,11 @@ import type {
   Account,
   AssetSummary,
   BalanceSheet,
+  BudgetCompare,
   FixedAsset,
   GeneralLedger,
   JournalEntry,
+  OrgBudget,
   OrgDashboard,
   Organization,
   ReceivablePayable,
@@ -395,6 +397,65 @@ export const accountingApi = {
       `/accounting/recurring/${id}/run`,
       {},
       withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  // ---- Budget vs Realisasi (Sprint 4) ----
+
+  async budgetList(orgId: string, fiscalYear?: number) {
+    const { data } = await api.get<ApiEnvelope<OrgBudget[]>>(
+      "/accounting/budget",
+      withOrg(orgId, fiscalYear ? { fiscal_year: fiscalYear } : undefined),
+    );
+    return unwrap(data);
+  },
+
+  async budgetCreate(
+    orgId: string,
+    payload: {
+      name: string;
+      fiscal_year: number;
+      category?: string | null;
+      account_id?: number | null;
+      amount_planned: number;
+      notes?: string | null;
+    },
+  ) {
+    const { data } = await api.post<ApiEnvelope<OrgBudget>>(
+      "/accounting/budget",
+      { organization_id: orgId, ...payload },
+    );
+    return unwrap(data);
+  },
+
+  async budgetUpdate(orgId: string, id: number, payload: Partial<{
+    name: string;
+    category: string | null;
+    account_id: number | null;
+    amount_planned: number;
+    notes: string | null;
+  }>) {
+    const { data } = await api.patch<ApiEnvelope<OrgBudget>>(
+      `/accounting/budget/${id}`,
+      payload,
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+
+  async budgetDelete(orgId: string, id: number) {
+    const { data } = await api.delete<ApiEnvelope<null>>(
+      `/accounting/budget/${id}`,
+      withOrg(orgId),
+    );
+    return data;
+  },
+
+  async budgetCompare(orgId: string, fiscalYear?: number) {
+    const { data } = await api.get<ApiEnvelope<BudgetCompare>>(
+      "/accounting/budget/compare",
+      withOrg(orgId, fiscalYear ? { fiscal_year: fiscalYear } : undefined),
     );
     return unwrap(data);
   },
