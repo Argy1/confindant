@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\ReceivablePayableController;
 use App\Http\Controllers\Api\RecurringOrgEntryController;
 use App\Http\Controllers\Api\RecurringTransactionController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\ReportPdfController;
 use App\Http\Controllers\Api\RestrictedFundController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
@@ -121,6 +122,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/accounting/reports/activities', [ReportController::class, 'statementOfActivities']);
         Route::get('/accounting/reports/trial-balance', [ReportController::class, 'trialBalance']);
         Route::get('/accounting/reports/ledger/{accountId}', [ReportController::class, 'generalLedger']);
+
+        // Export PDF Laporan (Sprint 3)
+        Route::get('/accounting/reports/balance-sheet/pdf', [ReportPdfController::class, 'balanceSheet']);
+        Route::get('/accounting/reports/activities/pdf', [ReportPdfController::class, 'activities']);
+        Route::get('/accounting/reports/trial-balance/pdf', [ReportPdfController::class, 'trialBalance']);
 
         // Aktiva Tetap & Penyusutan (Fase C)
         Route::get('/accounting/fixed-assets', [FixedAssetController::class, 'index']);

@@ -304,6 +304,31 @@ export const accountingApi = {
     return unwrap(data);
   },
 
+  // ---- PDF Export (Sprint 3) ----
+
+  async downloadReportPdf(
+    type: "balance-sheet" | "activities" | "trial-balance",
+    orgId: string,
+    params: Record<string, string | number | undefined> = {},
+  ): Promise<void> {
+    const { data, headers } = await api.get(
+      `/accounting/reports/${type}/pdf`,
+      {
+        ...withOrg(orgId, params as Record<string, unknown>),
+        responseType: "blob",
+      },
+    );
+    const disposition: string = (headers as Record<string, string>)["content-disposition"] ?? "";
+    const match = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+    const filename = match ? match[1].replace(/['"]/g, "") : `${type}.pdf`;
+    const url = URL.createObjectURL(new Blob([data as BlobPart], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  },
+
   // ---- Recurring Org Entries (Sprint 2) ----
 
   async recurringList(orgId: string) {

@@ -2,18 +2,34 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, AlertTriangle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, FileDown, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { accountingApi } from "@/lib/api/accounting";
 import { useActiveOrg } from "@/lib/hooks/use-active-org";
 import { YearSelect } from "@/components/org/year-select";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/api/client";
 
 export default function TrialBalancePage() {
   const { org, orgId } = useActiveOrg();
   const [year, setYear] = React.useState(new Date().getFullYear());
   const asOf = `${year}-12-31`;
+  const [downloading, setDownloading] = React.useState(false);
+
+  async function handleDownloadPdf() {
+    if (!orgId) return;
+    setDownloading(true);
+    try {
+      await accountingApi.downloadReportPdf("trial-balance", orgId, { as_of: asOf });
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Gagal mengunduh PDF"));
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["trial-balance", orgId, asOf],
@@ -32,7 +48,22 @@ export default function TrialBalancePage() {
             {org?.name} · Per {formatDate(asOf)}
           </p>
         </div>
-        <YearSelect value={year} onChange={setYear} />
+        <div className="flex items-center gap-2">
+          <YearSelect value={year} onChange={setYear} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownloadPdf}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FileDown className="mr-2 h-4 w-4" />
+            )}
+            PDF
+          </Button>
+        </div>
       </div>
 
       {isLoading || !data ? (

@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
+import { FileDown, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { accountingApi } from "@/lib/api/accounting";
 import { useActiveOrg } from "@/lib/hooks/use-active-org";
 import { useAccountsMap } from "@/lib/hooks/use-accounts-map";
@@ -10,17 +12,32 @@ import { YearSelect } from "@/components/org/year-select";
 import { ReportSection } from "@/components/org/report-section";
 import { LedgerDialog } from "@/components/org/ledger-dialog";
 import { formatCurrency } from "@/lib/utils";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/api/client";
 
 export default function ActivitiesPage() {
   const { org, orgId } = useActiveOrg();
   const [year, setYear] = React.useState(new Date().getFullYear());
   const from = `${year}-01-01`;
   const to = `${year}-12-31`;
+  const [downloading, setDownloading] = React.useState(false);
 
   const { codeToId } = useAccountsMap(orgId);
   const [ledger, setLedger] = React.useState<{ id: string; name: string } | null>(
     null,
   );
+
+  async function handleDownloadPdf() {
+    if (!orgId) return;
+    setDownloading(true);
+    try {
+      await accountingApi.downloadReportPdf("activities", orgId, { year });
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, "Gagal mengunduh PDF"));
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ["activities", orgId, year],
@@ -46,7 +63,22 @@ export default function ActivitiesPage() {
             {org?.name} · Periode {year}
           </p>
         </div>
-        <YearSelect value={year} onChange={setYear} />
+        <div className="flex items-center gap-2">
+          <YearSelect value={year} onChange={setYear} />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDownloadPdf}
+            disabled={downloading}
+          >
+            {downloading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <FileDown className="mr-2 h-4 w-4" />
+            )}
+            PDF
+          </Button>
+        </div>
       </div>
 
       {isLoading || !data ? (
