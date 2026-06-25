@@ -81,4 +81,28 @@ export const aiApi = {
     );
     return data;
   },
+
+  // Org AI chat
+  async orgFinanceQuery(query: string, orgId?: string | null) {
+    const { data } = await api.post<ApiEnvelope<{ answer: string; data?: unknown }>>(
+      "/accounting/ai/finance-query",
+      { query },
+      { params: orgId ? { organization_id: orgId } : {} },
+    );
+    return unwrap(data);
+  },
+  async orgFinanceQueryHistory(orgId?: string | null) {
+    const { data } = await api.get<ApiEnvelope<FinanceQuery[]>>(
+      "/accounting/ai/finance-query/history",
+      { params: orgId ? { organization_id: orgId } : {} },
+    );
+    return unwrap(data);
+  },
+  async clearOrgFinanceQueryHistory(orgId?: string | null) {
+    const { data } = await api.delete<ApiEnvelope<null>>(
+      "/accounting/ai/finance-query/history",
+      { params: orgId ? { organization_id: orgId } : {} },
+    );
+    return data;
+  },
 };

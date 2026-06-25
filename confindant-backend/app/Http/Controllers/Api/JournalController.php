@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Concerns\ApiResponse;
 use App\Http\Controllers\Api\Concerns\ResolvesOrganization;
 use App\Http\Controllers\Controller;
 use App\Models\JournalEntry;
+use App\Models\ReceiptOcrJob;
 use App\Services\Accounting\AccountingService;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
@@ -144,5 +145,59 @@ class JournalController extends Controller
         $this->accounting->voidEntry($entry, $request->user()->id);
 
         return $this->ok($entry->fresh('lines'), 'Jurnal berhasil dibatalkan (dibuat pembalik)');
+    }
+
+    public function commitFromOcr(Request $request, string $id)
+    {
+        $org = $this->resolveOrganization($request);
+        if (!$org) {
+            return $this->fail('Organisasi tidak ditemukan', [], 404);
+        }
+        if (!$this->canWriteAccounting($this->organizationRole($request, $org))) {
+            return $this->fail('Anda tidak memiliki akses untuk membuat jurnal', [], 403);
+        }
+
+        $job = ReceiptOcrJob::where('id', $id)
+            ->where('user_id', (string) $request->user()->id)
+            ->first();
+        if (!$job || $job->status !== 'success') {
+            return $this->fail('OCR job tidak ditemukan atau belum selesai', [], 404);
+        }
+
+        $validated = $request->validate([
+            'debit_account_id'  => 'required|integer',
+            'credit_account_id' => 'required|integer',
+            'amount'            => 'required|numeric|min:0.01',
+            'date'              => 'required|date',
+            'description'       => 'required|string|max:500',
+        ]);
+
+        try {
+            $entry = $this->accounting->createEntry([
+                'organization_id' => $org->id,
+                'date'            => $validated['date'],
+                'description'     => $validated['description'],
+                'source'          => 'scan_ocr',
+                'created_by'      => $request->user()->id,
+                'posted_by'       => $request->user()->id,
+            ], [
+                [
+                    'account_id' => (int) $validated['debit_account_id'],
+                    'debit'      => (float) $validated['amount'],
+                    'credit'     => 0,
+                    'memo'       => 'Scan struk',
+                ],
+                [
+                    'account_id' => (int) $validated['credit_account_id'],
+                    'debit'      => 0,
+                    'credit'     => (float) $validated['amount'],
+                    'memo'       => 'Scan struk',
+                ],
+            ]);
+        } catch (InvalidArgumentException $e) {
+            return $this->fail($e->getMessage(), [], 422);
+        }
+
+        return $this->ok($entry, 'Jurnal dari scan struk berhasil dibuat', [], 201);
     }
 }

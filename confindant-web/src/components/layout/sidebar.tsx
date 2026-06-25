@@ -25,6 +25,7 @@ import {
   HandCoins,
   PiggyBank,
   Upload,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOrgStore } from "@/store/org";
@@ -84,6 +85,13 @@ export const orgNav: NavGroup[] = [
       { href: "/org/receivables-payables", label: "Piutang & Hutang", icon: HandCoins },
       { href: "/org/restricted-funds", label: "Dana Titipan", icon: PiggyBank },
       { href: "/org/import", label: "Import Excel", icon: Upload },
+    ],
+  },
+  {
+    heading: "AI & Tools",
+    items: [
+      { href: "/org/ai-chat", label: "AI Konsultan", icon: Sparkles },
+      { href: "/org/scan", label: "Scan Struk", icon: Camera },
     ],
   },
 ];

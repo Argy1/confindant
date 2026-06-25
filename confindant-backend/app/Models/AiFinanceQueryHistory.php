@@ -10,6 +10,7 @@ class AiFinanceQueryHistory extends Model
 
     protected $fillable = [
         'user_id',
+        'organization_id',
         'query',
         'locale',
         'period',

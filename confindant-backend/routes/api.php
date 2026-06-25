@@ -143,5 +143,13 @@ Route::prefix('v1')->group(function () {
         // Import Excel (Fase E)
         Route::post('/accounting/import/harian', [AccountingImportController::class, 'importHarian'])
             ->middleware('throttle:scan-upload');
+
+        // AI Chat untuk Org (Sprint 1)
+        Route::post('/accounting/ai/finance-query', [AiController::class, 'orgFinanceQuery'])->middleware('throttle:ai-inference');
+        Route::get('/accounting/ai/finance-query/history', [AiController::class, 'orgFinanceQueryHistory'])->middleware('throttle:ai-inference');
+        Route::delete('/accounting/ai/finance-query/history', [AiController::class, 'clearOrgFinanceQueryHistory'])->middleware('throttle:ai-inference');
+
+        // Scan Struk untuk Org — commit OCR ke jurnal (Sprint 1)
+        Route::post('/accounting/scan-ocr/{id}/commit', [JournalController::class, 'commitFromOcr']);
     });
 });

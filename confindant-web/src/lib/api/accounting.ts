@@ -302,4 +302,23 @@ export const accountingApi = {
     });
     return unwrap(data);
   },
+
+  async scanOcrCommitToJournal(
+    orgId: string,
+    ocrJobId: string,
+    payload: {
+      debit_account_id: number;
+      credit_account_id: number;
+      amount: number;
+      date: string;
+      description: string;
+    },
+  ) {
+    const { data } = await api.post<ApiEnvelope<JournalEntry>>(
+      `/accounting/scan-ocr/${ocrJobId}/commit`,
+      payload,
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
 };

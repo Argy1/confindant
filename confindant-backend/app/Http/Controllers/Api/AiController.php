@@ -9,9 +9,11 @@ use App\Models\AiFinanceQueryHistory;
 use App\Models\ReceiptOcrFeedback;
 use App\Models\ReceiptOcrJob;
 use App\Models\Transaction;
+use App\Http\Controllers\Api\Concerns\ResolvesOrganization;
 use App\Services\AiCategorizationService;
 use App\Services\AiFinanceInsightService;
 use App\Services\AiFinanceQueryService;
+use App\Services\AiOrgQueryService;
 use App\Services\AiTransactionParseService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -19,6 +21,7 @@ use Illuminate\Http\Request;
 class AiController extends Controller
 {
     use ApiResponse;
+    use ResolvesOrganization;
 
     public function categorizeTransaction(Request $request, AiCategorizationService $service)
     {
@@ -354,5 +357,75 @@ class AiController extends Controller
         $item->delete();
 
         return $this->ok(null, 'Riwayat AI berhasil dihapus');
+    }
+
+    // ============= ORG AI CHAT =============
+
+    public function orgFinanceQuery(Request $request, AiOrgQueryService $service)
+    {
+        $org = $this->resolveOrganization($request);
+        if (!$org) {
+            return $this->fail('Organisasi tidak ditemukan', [], 404);
+        }
+
+        $validated = $request->validate([
+            'query'  => 'required|string|max:1000',
+            'locale' => 'nullable|in:id,en',
+        ]);
+
+        $result = $service->answer(
+            (string) $org->id,
+            (string) $org->name,
+            (string) $validated['query'],
+            $validated['locale'] ?? null
+        );
+
+        $saved = AiFinanceQueryHistory::create([
+            'user_id'         => (string) $request->user()->id,
+            'organization_id' => (int) $org->id,
+            'query'           => (string) $result['query'],
+            'locale'          => $validated['locale'] ?? null,
+            'period'          => $result['period'] ?? null,
+            'answer'          => (string) ($result['answer'] ?? ''),
+            'insight'         => (string) ($result['insight'] ?? ''),
+            'suggested_actions' => $result['suggested_actions'] ?? [],
+            'metrics'         => $result['metrics'] ?? [],
+            'provider'        => (string) ($result['provider'] ?? 'unknown'),
+            'fallback'        => (bool) ($result['fallback'] ?? false),
+        ]);
+
+        $result['history_id'] = (string) ($saved->id ?? '');
+
+        return $this->ok($result, 'AI org finance query berhasil diproses');
+    }
+
+    public function orgFinanceQueryHistory(Request $request)
+    {
+        $org = $this->resolveOrganization($request);
+        if (!$org) {
+            return $this->fail('Organisasi tidak ditemukan', [], 404);
+        }
+
+        $items = AiFinanceQueryHistory::where('user_id', (string) $request->user()->id)
+            ->where('organization_id', $org->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get();
+
+        return $this->ok($items, 'Riwayat AI org query berhasil diambil');
+    }
+
+    public function clearOrgFinanceQueryHistory(Request $request)
+    {
+        $org = $this->resolveOrganization($request);
+        if (!$org) {
+            return $this->fail('Organisasi tidak ditemukan', [], 404);
+        }
+
+        AiFinanceQueryHistory::where('user_id', (string) $request->user()->id)
+            ->where('organization_id', $org->id)
+            ->delete();
+
+        return $this->ok(null, 'Riwayat AI org query berhasil dihapus');
     }
 }
