@@ -961,6 +961,80 @@ class BackendApiService {
     );
   }
 
+  // ---- Rekening Harian ----
+
+  Future<Map<String, dynamic>> orgRekeningHarianList(
+    String orgId, {
+    String? fromDate,
+    String? toDate,
+    int perPage = 200,
+    int page = 1,
+  }) async {
+    final json = await _client.get(
+      '/v1/accounting/rekening-harian',
+      query: {
+        'organization_id': orgId,
+        'per_page': perPage,
+        'page': page,
+        ...?fromDate != null ? {'from_date': fromDate} : null,
+        ...?toDate != null ? {'to_date': toDate} : null,
+      },
+    );
+    if (json['success'] != true) {
+      throw ApiException(json['message']?.toString() ?? 'Request failed');
+    }
+    final rawData = json['data'];
+    final rows = rawData is List
+        ? rawData.whereType<Map>().map((e) => Map<String, dynamic>.from(e)).toList()
+        : <Map<String, dynamic>>[];
+    final meta = json['meta'] is Map
+        ? Map<String, dynamic>.from(json['meta'] as Map)
+        : <String, dynamic>{};
+    return {'rows': rows, 'meta': meta};
+  }
+
+  Future<Map<String, dynamic>> orgRekeningHarianCreate(
+    String orgId, {
+    required String date,
+    required String uraian,
+    double? pemasukan,
+    double? pengeluaran,
+    String? kategori,
+    String? keterangan,
+    String? klasifikasi,
+  }) async {
+    return _requireData(
+      await _client.post(
+        '/v1/accounting/rekening-harian',
+        body: {
+          'organization_id': orgId,
+          'date': date,
+          'uraian': uraian,
+          ...?pemasukan != null ? {'pemasukan': pemasukan} : null,
+          ...?pengeluaran != null ? {'pengeluaran': pengeluaran} : null,
+          ...?kategori != null ? {'kategori': kategori} : null,
+          ...?keterangan != null ? {'keterangan': keterangan} : null,
+          ...?klasifikasi != null ? {'klasifikasi': klasifikasi} : null,
+        },
+      ),
+    );
+  }
+
+  Future<void> orgRekeningHarianDelete(String orgId, int id) async {
+    await _client.delete('/v1/accounting/rekening-harian/$id?organization_id=$orgId');
+  }
+
+  Future<Map<String, dynamic>> orgRekeningHarianCategories(
+    String orgId,
+  ) async {
+    return _requireData(
+      await _client.get(
+        '/v1/accounting/rekening-harian/categories',
+        query: {'organization_id': orgId},
+      ),
+    );
+  }
+
   // ---- Org AI Chat ----
 
   Future<Map<String, dynamic>> orgAiFinanceQuery(

@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\OrganizationMemberController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReceivablePayableController;
 use App\Http\Controllers\Api\RecurringOrgEntryController;
+use App\Http\Controllers\Api\RekeningHarianController;
 use App\Http\Controllers\Api\RecurringTransactionController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReportPdfController;
@@ -116,6 +117,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/accounting/accounts', [AccountController::class, 'index']);
         Route::post('/accounting/accounts', [AccountController::class, 'store']);
         Route::patch('/accounting/accounts/{id}', [AccountController::class, 'update']);
+
+        // Rekening Harian (simplified cash-book input → auto double-entry)
+        Route::get('/accounting/rekening-harian/categories', [RekeningHarianController::class, 'categories']);
+        Route::get('/accounting/rekening-harian', [RekeningHarianController::class, 'index']);
+        Route::post('/accounting/rekening-harian', [RekeningHarianController::class, 'store']);
+        Route::delete('/accounting/rekening-harian/{id}', [RekeningHarianController::class, 'destroy']);
 
         // Jurnal Umum (double-entry)
         Route::get('/accounting/journal', [JournalController::class, 'index']);

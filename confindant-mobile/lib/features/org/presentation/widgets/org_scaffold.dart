@@ -122,6 +122,8 @@ class _OrgBottomNav extends StatelessWidget {
                   RoutePaths.orgRestrictedFunds),
               tile(Icons.upload_file_rounded, 'Import Excel', RoutePaths.orgImport),
               tile(Icons.people_rounded, 'Anggota', RoutePaths.orgMembers),
+              tile(Icons.account_balance_wallet_rounded, 'Rekening Harian',
+                  RoutePaths.orgRekeningHarian),
               tile(Icons.repeat_rounded, 'Jurnal Berulang', RoutePaths.orgRecurring),
               tile(Icons.bar_chart_rounded, 'Budget & Realisasi', RoutePaths.orgBudget),
               const Divider(height: 1),

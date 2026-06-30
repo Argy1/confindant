@@ -44,5 +44,6 @@ abstract class RoutePaths {
   static const orgRecurring = '/org/recurring';
   static const orgBudget = '/org/budget';
   static const orgMembers = '/org/members';
+  static const orgRekeningHarian = '/org/rekening-harian';
   static const orgInviteAccept = '/org-invite/:token';
 }

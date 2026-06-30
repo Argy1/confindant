@@ -28,6 +28,7 @@ import {
   Upload,
   Sparkles,
   BarChart3,
+  Banknote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useOrgStore } from "@/store/org";
@@ -70,6 +71,7 @@ export const orgNav: NavGroup[] = [
   {
     heading: "Pembukuan",
     items: [
+      { href: "/org/rekening-harian", label: "Rekening Harian", icon: Banknote },
       { href: "/org/journal", label: "Jurnal Umum", icon: BookText },
       { href: "/org/ledger", label: "Buku Besar", icon: BookOpen },
       { href: "/org/accounts", label: "Bagan Akun", icon: ListTree },

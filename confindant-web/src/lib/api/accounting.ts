@@ -540,3 +540,81 @@ export const accountingApi = {
     return unwrap(data);
   },
 };
+
+// ---- Rekening Harian ----
+
+export type RekeningHarianRow = {
+  id: number;
+  date: string;
+  uraian: string;
+  pemasukan: number | null;
+  pengeluaran: number | null;
+  saldo: number;
+  kategori: string | null;
+  keterangan: string | null;
+  klasifikasi: string | null;
+  source: string;
+};
+
+export type RekeningHarianMeta = {
+  page: number;
+  per_page: number;
+  total: number;
+  has_more: boolean;
+  opening_balance: number;
+  running_balance: number;
+};
+
+export type RekeningHarianCategories = {
+  income: string[];
+  expense: string[];
+  other: string[];
+};
+
+export const rekeningHarianApi = {
+  async list(
+    orgId: string,
+    params: { from_date?: string; to_date?: string; page?: number; per_page?: number } = {},
+  ) {
+    const { data } = await api.get<ApiEnvelope<RekeningHarianRow[]>>(
+      "/accounting/rekening-harian",
+      withOrg(orgId, params),
+    );
+    return { rows: unwrap(data), meta: data.meta as unknown as RekeningHarianMeta };
+  },
+
+  async create(
+    orgId: string,
+    payload: {
+      date: string;
+      uraian: string;
+      pemasukan?: number;
+      pengeluaran?: number;
+      kategori?: string;
+      keterangan?: string;
+      klasifikasi?: string;
+    },
+  ) {
+    const { data } = await api.post<ApiEnvelope<unknown>>(
+      "/accounting/rekening-harian",
+      { organization_id: orgId, ...payload },
+    );
+    return unwrap(data);
+  },
+
+  async remove(orgId: string, id: number) {
+    const { data } = await api.delete<ApiEnvelope<null>>(
+      `/accounting/rekening-harian/${id}`,
+      withOrg(orgId),
+    );
+    return data;
+  },
+
+  async categories(orgId: string) {
+    const { data } = await api.get<ApiEnvelope<RekeningHarianCategories>>(
+      "/accounting/rekening-harian/categories",
+      withOrg(orgId),
+    );
+    return unwrap(data);
+  },
+};
